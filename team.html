@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>C조 통합 근무 시스템 v6.6</title>
+    <title>C조 통합 근무 시스템 v6.7</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap');
@@ -12,44 +12,44 @@
         .tab-content.active { display: block; }
         .nav-tab.active { color: #2E4077; border-bottom: 3px solid #2E4077; background-color: white; }
         .custom-table { width: 100%; border-collapse: collapse; font-size: 11px; text-align: center; table-layout: fixed; background: white; }
-        .custom-table th { background: #f8fafc; color: #1e293b; padding: 4px 1px; border: 1px solid #e2e8f0; font-weight: 800; }
-        .custom-table td { border: 1px solid #e2e8f0; padding: 5px 1px; color: #475569; }
+        .custom-table th { background: #f8fafc; color: #1e293b; padding: 6px 1px; border: 1px solid #e2e8f0; font-weight: 800; }
+        .custom-table td { border: 1px solid #e2e8f0; padding: 6px 1px; color: #475569; }
         .status-card-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 12px; }
-        .worker-card { background: white; padding: 10px 5px; border-radius: 14px; border: 1px solid #e2e8f0; text-align: center; }
-        .worker-name { font-size: 10px; font-weight: 800; color: #64748b; }
-        .worker-pos { font-size: 14px; font-weight: 900; color: #1e293b; }
+        .worker-card { background: white; padding: 12px 5px; border-radius: 14px; border: 1px solid #e2e8f0; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+        .worker-name { font-size: 11px; font-weight: 800; color: #64748b; margin-bottom: 2px; }
+        .worker-pos { font-size: 15px; font-weight: 900; color: #1e293b; }
         .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); border-top: 1px solid #e2e8f0; border-left: 1px solid #e2e8f0; background: white; }
-        .calendar-cell { border-right: 1px solid #e2e8f0; border-bottom: 1px solid #e2e8f0; display: flex; flex-direction: column; aspect-ratio: 1 / 1.3; }
-        .is-today { outline: 3px solid #ef4444; outline-offset: -3px; z-index: 10; }
-        .shift-area { font-size: 12px; font-weight: 900; margin-top: 2px; border-radius: 4px; }
+        .calendar-cell { border-right: 1px solid #e2e8f0; border-bottom: 1px solid #e2e8f0; display: flex; flex-direction: column; aspect-ratio: 1 / 1.3; padding: 2px; }
+        .is-today { outline: 3px solid #ef4444; outline-offset: -3px; z-index: 10; background-color: #fef2f2; }
+        .shift-area { font-size: 11px; font-weight: 900; margin-top: auto; border-radius: 4px; padding: 2px 0; }
     </style>
 </head>
 <body>
     <div class="max-w-md mx-auto bg-white min-h-screen shadow-lg flex flex-col">
         <div class="bg-[#2E4077] p-6 text-center text-white">
-            <h1 class="text-xl font-black">🛡️ C조 통합 근무 시스템 v6.6</h1>
+            <h1 class="text-xl font-black">🛡️ C조 통합 근무 시스템 v6.7</h1>
             <p id="current-time" class="text-[10px] opacity-70 mt-1.5 font-medium"></p>
         </div>
 
         <div class="flex border-b bg-slate-50 sticky top-0 z-50">
-            <button onclick="openTab('status')" id="btn-status" class="nav-tab active flex-1 py-4 text-[11px] font-black">🕒 실시간현황</button>
-            <button onclick="openTab('schedule')" id="btn-schedule" class="nav-tab flex-1 py-4 text-[11px] font-black">📅 근무편성표</button>
-            <button onclick="openTab('calendar')" id="btn-calendar" class="nav-tab flex-1 py-4 text-[11px] font-black">🏥 근무달력</button>
+            <button onclick="openTab('status')" id="btn-status" class="nav-tab active flex-1 py-4 text-[12px] font-black">🕒 실시간현황</button>
+            <button onclick="openTab('schedule')" id="btn-schedule" class="nav-tab flex-1 py-4 text-[12px] font-black">📅 근무편성표</button>
+            <button onclick="openTab('calendar')" id="btn-calendar" class="nav-tab flex-1 py-4 text-[12px] font-black">🏥 근무달력</button>
         </div>
 
         <div id="status" class="tab-content active p-3">
+            <div id="time-msg" class="mb-4"></div>
             <div id="worker-cards" class="status-card-grid"></div>
-            <div id="time-msg"></div>
-            <div id="next-duty-notice" class="text-center mb-4 text-[11px] font-black text-slate-500 bg-slate-100 py-3 rounded-xl border border-slate-200"></div>
+            <div id="next-duty-notice" class="text-center mb-4 text-[11px] font-bold text-slate-500 bg-slate-100 py-3 rounded-xl border border-slate-200"></div>
             <div class="overflow-hidden rounded-xl border border-slate-200 shadow-sm">
                 <table class="custom-table" id="status-table"></table>
             </div>
         </div>
 
         <div id="schedule" class="tab-content p-3">
-            <div class="mb-3 flex gap-2 items-center">
-                <span class="text-[11px] font-bold">인물 강조:</span>
-                <select id="worker-focus" onchange="renderSchedule()" class="text-[11px] border rounded p-1 flex-1">
+            <div class="mb-3 flex gap-2 items-center bg-slate-50 p-2 rounded-lg border">
+                <span class="text-[11px] font-bold text-slate-600">인물 강조:</span>
+                <select id="worker-focus" onchange="renderSchedule()" class="text-[11px] border rounded p-1 flex-1 font-bold">
                     <option value="">없음</option>
                     <option value="황재업">황재업</option><option value="김태언">김태언</option>
                     <option value="이태원">이태원</option><option value="이정석">이정석</option>
@@ -62,9 +62,9 @@
 
         <div id="calendar" class="tab-content p-3">
             <div class="flex justify-between items-center mb-4 px-2">
-                <button onclick="changeMonth(-1)" class="font-bold text-[#2E4077]">◀</button>
-                <div id="cal-title" class="font-black text-[#2E4077]"></div>
-                <button onclick="changeMonth(1)" class="font-bold text-[#2E4077]">▶</button>
+                <button onclick="changeMonth(-1)" class="p-2 font-bold text-[#2E4077] bg-slate-100 rounded-full w-8 h-8 flex items-center justify-center">◀</button>
+                <div id="cal-title" class="font-black text-[#2E4077] text-lg"></div>
+                <button onclick="changeMonth(1)" class="p-2 font-bold text-[#2E4077] bg-slate-100 rounded-full w-8 h-8 flex items-center justify-center">▶</button>
             </div>
             <div class="grid grid-cols-7 text-center font-black text-[10px] py-2 bg-slate-50 text-slate-400 border-b">
                 <div class="text-red-500">일</div><div>월</div><div>화</div><div>수</div><div>목</div><div>금</div><div class="text-blue-500">토</div>
@@ -75,7 +75,7 @@
 
     <script>
         const CONFIG = {
-            baseDate: '2025-01-01', // C조 기준일 고정
+            baseDate: '2026-03-09',
             patterns: [
                 {name:'C', color:'#E3F2FD', highlight:'#1976D2'}, 
                 {name:'A', color:'#FFF3E0', highlight:'#F57C00'}, 
@@ -92,7 +92,7 @@
 
         let curY = new Date().getFullYear(), curM = new Date().getMonth();
 
-        // 1. 날짜 로직: 07시 기준 판정
+        // [날짜 로직] 오전 7시 기준 보정
         function getDutyInfo(dateObj) {
             let logicalDate = new Date(dateObj);
             if (dateObj.getHours() < 7) logicalDate.setDate(logicalDate.getDate() - 1);
@@ -111,7 +111,7 @@
             return { logicalDate, dayIdx, pIdx, isDuty: (dayIdx === 0) };
         }
 
-        // 2. 실시간 현황 렌더링
+        // [현황 렌더링]
         function renderStatus() {
             const now = new Date();
             const info = getDutyInfo(now);
@@ -121,10 +121,12 @@
 
             const msgBox = document.getElementById('time-msg');
             const cardArea = document.getElementById('worker-cards');
+            const table = document.getElementById('status-table');
             
             if (info.isDuty) {
-                msgBox.innerHTML = `<div class="bg-blue-600 text-white p-4 rounded-2xl text-center font-black text-lg mb-4">🛡️ 현재 C조 근무 시간입니다.</div>`;
-                cardArea.classList.remove('hidden');
+                const statusTxt = hr < 7 ? "마무리" : "당직";
+                msgBox.innerHTML = `<div class="bg-blue-600 text-white p-5 rounded-2xl text-center font-black text-lg shadow-md border-b-4 border-blue-800">🛡️ 현재 C조 ${statusTxt} 근무 중</div>`;
+                cardArea.style.display = 'grid';
                 
                 let curIdx = DATA_LIST.findIndex(r => {
                     let [sH, sM] = r[0].split(':').map(Number);
@@ -145,20 +147,20 @@
                 DATA_LIST.forEach((r, i) => {
                     h += `<tr ${i === curIdx ? 'class="bg-orange-50 font-bold outline outline-1 outline-red-400"' : ''}><td>${r[0]}~${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td><td>${r[4]}</td><td>${r[5]}</td></tr>`;
                 });
-                document.getElementById('status-table').innerHTML = h + "</tbody>";
+                table.innerHTML = h + "</tbody>";
             } else {
-                msgBox.innerHTML = `<div class="bg-slate-200 text-slate-500 p-5 rounded-2xl text-center font-black text-lg border mb-4">😴 오늘은 비번(휴무)입니다.</div>`;
-                cardArea.classList.add('hidden');
-                document.getElementById('status-table').innerHTML = ""; 
+                msgBox.innerHTML = `<div class="bg-slate-200 text-slate-500 p-5 rounded-2xl text-center font-black text-lg border">😴 오늘은 비번(휴무)입니다.</div>`;
+                cardArea.style.display = 'none';
+                table.innerHTML = "";
             }
 
             let nextD = new Date(info.logicalDate);
             do { nextD.setDate(nextD.getDate() + 1); } while (getDutyInfo(nextD).dayIdx !== 0);
-            document.getElementById('next-duty-notice').innerText = `다음 근무 예정일: ${nextD.getMonth()+1}월 ${nextD.getDate()}일`;
-            document.getElementById('current-time').innerText = now.toLocaleString();
+            document.getElementById('next-duty-notice').innerText = `다음 근무일: ${nextD.getMonth()+1}월 ${nextD.getDate()}일 (07:00)`;
+            document.getElementById('current-time').innerText = now.toLocaleString('ko-KR');
         }
 
-        // 3. 근무편성표 렌더링
+        // [편성표 렌더링]
         function renderSchedule() {
             const focus = document.getElementById('worker-focus').value;
             let h = `<thead><tr><th>날짜</th><th>조장</th><th>성희</th><th>의산A</th><th>의산B</th></tr></thead><tbody>`;
@@ -177,18 +179,20 @@
             document.getElementById('schedule-list').innerHTML = h + `</tbody>`;
         }
 
-        // 4. 달력 렌더링
+        // [달력 렌더링]
         function renderCalendar() {
             const body = document.getElementById('calendar-grid-body');
             body.innerHTML = '';
             document.getElementById('cal-title').innerText = `${curY}년 ${curM+1}월`;
             const first = new Date(curY, curM, 1).getDay();
             const last = new Date(curY, curM+1, 0).getDate();
+            const todayStr = new Date().toDateString();
+
             for(let i=0; i<first; i++) body.innerHTML += `<div class="calendar-cell bg-slate-50/50"></div>`;
             for(let d=1; d<=last; d++) {
                 const dt = new Date(curY, curM, d, 12, 0, 0);
                 const info = getDutyInfo(dt);
-                const isToday = new Date().toDateString() === dt.toDateString();
+                const isToday = todayStr === new Date(curY, curM, d).toDateString();
                 const shift = CONFIG.patterns[info.dayIdx];
                 body.innerHTML += `
                     <div class="calendar-cell ${isToday ? 'is-today' : ''}">
@@ -199,15 +203,21 @@
         }
 
         function openTab(id) {
-            document.querySelectorAll('.tab-content, .nav-tab').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active'));
             document.getElementById(id).classList.add('active');
             document.getElementById('btn-'+id).classList.add('active');
             if(id==='calendar') renderCalendar(); else if(id==='schedule') renderSchedule(); else renderStatus();
         }
 
-        function changeMonth(v) { curM += v; if(curM < 0){ curM=11; curY--; } else if(curM > 11){ curM=0; curY++; } renderCalendar(); }
+        function changeMonth(v) { 
+            curM += v; 
+            if(curM < 0){ curM=11; curY--; } else if(curM > 11){ curM=0; curY++; } 
+            renderCalendar(); 
+        }
 
         window.onload = () => { renderStatus(); };
+        setInterval(renderStatus, 10000);
     </script>
 </body>
 </html>
