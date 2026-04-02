@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>통합 비상연락망</title>
+    <style>
+        :root {
+            --bg-gray: #f8f9fa;
+            --border-color: #e9ecef;
+            --blue-point: #007aff;
+            --navy-bg: #1a2a44;
+            --green-bg: #2d5a27;
+            --a-bg: #e8f5e9; --a-label: #c8e6c9; --a-text: #2e7d32;
+            --b-bg: #fff8e1; --b-label: #ffecb3; --b-text: #ef6c00;
+            --c-bg: #ffebee; --c-label: #ffcdd2; --c-text: #c62828;
+            --dorm-bg: #f3e5f5; --dorm-label: #e1bee7; --dorm-text: #6a1b9a;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background-color: var(--bg-gray); padding: 5px; display: flex; flex-direction: column; align-items: center; }
+
+        /* 상단 메인 탭 - 높이 축소 */
+        .main-tabs { display: flex; width: 100%; max-width: 500px; margin-bottom: 8px; background: #e9ecef; border-radius: 8px; padding: 2px; }
+        .main-tab-item { flex: 1; text-align: center; padding: 8px; font-weight: bold; cursor: pointer; border-radius: 6px; font-size: 14px; color: #6c757d; }
+        .main-tab-item.active { background: white; color: var(--blue-point); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+
+        .main-container { width: 100%; max-width: 500px; display: none; }
+        .main-container.active { display: block; }
+
+        /* 보안팀 카드 스타일 - 여백 및 크기 압축 */
+        .table-container { background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.06); overflow: hidden; border: 1px solid var(--border-color); margin-bottom: 8px; }
+        .row { display: flex; border-bottom: 1px solid var(--border-color); }
+        .row:last-child { border-bottom: none; }
+        .side-label { width: 45px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 11px; flex-shrink: 0; text-align: center; padding: 5px 2px; line-height: 1.2; }
+        .content-area { flex-grow: 1; padding: 6px; }
+        .grid-box { display: grid; grid-template-columns: repeat(2, 1fr); gap: 4px; }
+        .quad-grid { grid-template-columns: repeat(4, 1fr); gap: 3px; }
+        
+        .person-card { 
+            background: white; border: 1px solid var(--border-color); border-radius: 6px; 
+            padding: 5px 1px; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            cursor: pointer; text-decoration: none; color: inherit; min-height: 42px;
+        }
+        .boss-card { border: 1.5px solid var(--blue-point); background-color: #f0f7ff; }
+        .card-a { background-color: var(--a-bg); } .card-b { background-color: var(--b-bg); }
+        .card-c { background-color: var(--c-bg); } .card-dorm { background-color: var(--dorm-bg); }
+        .empty-card { border: 1px dashed #ccc; background: rgba(255,255,255,0.3); pointer-events: none; }
+        
+        .pos-tag { font-size: 8px; color: #777; margin-bottom: 1px; font-weight: 600; transform: scale(0.9); }
+        .name-text { font-size: 13px; font-weight: 800; letter-spacing: -0.5px; }
+        .name-small { font-size: 12px; }
+
+        /* 미화팀 테이블 스타일 - 여백 최소화 */
+        .sub-tabs { display: flex; background: #dfe3e6; border-radius: 8px; padding: 2px; margin-bottom: 8px; }
+        .sub-tab-item { flex: 1; text-align: center; padding: 6px; font-size: 12px; font-weight: 800; cursor: pointer; border-radius: 6px; color: #777; }
+        .sub-tab-item.active { background: white; color: #333; }
+        
+        .clean-container { display: none; }
+        .clean-container.active { display: block; }
+        .card { background: white; border-radius: 10px; overflow: hidden; border: 1px solid #e1e4e8; }
+        .header { padding: 8px; color: white; font-weight: 800; text-align: center; font-size: 14px; }
+        .sh-bg { background: var(--navy-bg); }
+        .is-bg { background: var(--green-bg); }
+        
+        table { width: 100%; border-collapse: collapse; font-size: 12px; }
+        th { background: #f8f9fa; padding: 6px 2px; border-bottom: 1px solid #dee2e6; color: #444; font-size: 11px; }
+        td { padding: 6px 2px; border-bottom: 1px solid #eee; text-align: center; color: #333; }
+        .sub-header { background: #f1f3f5; font-weight: 800; color: #555; font-size: 11px; }
+        
+        .tel-link {
+            display: inline-block; padding: 3px 5px; background: #fff; border: 1px solid #007aff;
+            color: #007aff; text-decoration: none; border-radius: 4px; font-weight: 800; font-size: 11px;
+        }
+        .is-tel { border-color: var(--green-bg); color: var(--green-bg); }
+        .highlight { background-color: #fff9db; font-weight: 800; }
+
+        /* 모달 스타일 유지 */
+        #modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7); z-index: 10000; justify-content: center; align-items: center; padding: 20px;
+        }
+        .modal-content {
+            background: white; width: 90%; max-width: 280px; padding: 20px;
+            border-radius: 20px; text-align: center; position: relative;
+        }
+        .m-name { font-size: 24px; font-weight: 900; margin-bottom: 2px; }
+        .m-pos { font-size: 14px; color: var(--blue-point); font-weight: 700; margin-bottom: 15px; }
+        .m-info-box { background: #f8f9fa; border-radius: 10px; padding: 12px; margin-bottom: 15px; text-align: left; }
+        .m-line { font-size: 13px; color: #555; margin-bottom: 6px; display: flex; justify-content: space-between; }
+        .btn-call { display: block; background: #28a745; color: white; padding: 12px; border-radius: 12px; text-decoration: none; font-size: 16px; font-weight: bold; }
+        
+        .footer-info { font-size: 10px; color: #aaa; text-align: center; margin-top: 15px; line-height: 1.4; }
+    </style>
+</head>
+<body>
+
+<div class="main-tabs">
+    <div id="tab-sec" class="main-tab-item active" onclick="switchMainTab('sec')">🛡️ 보안팀</div>
+    <div id="tab-clean" class="main-tab-item" onclick="switchMainTab('clean')">🧹 미화팀</div>
+</div>
+
+<div id="sec-container" class="main-container active">
+    <div class="table-container">
+        <div class="row">
+            <div class="side-label" style="background:#eceff1; color:#263238;">지휘부</div>
+            <div class="content-area"><div class="grid-box">
+                <div class="person-card boss-card" onclick="openModal('이규용','보안소장','010-8883-6580','1972.03.01','-')"><span class="pos-tag" style="color:var(--blue-point)">보안소장</span><span class="name-text">이규용</span></div>
+                <div class="person-card boss-card" onclick="openModal('박상현','보안부소장','010-3193-4603','1988.07.31','-')"><span class="pos-tag" style="color:var(--blue-point)">부소장</span><span class="name-text">박상현</span></div>
+            </div></div>
+        </div>
+        <div class="row">
+            <div class="side-label" style="background:#f1f3f4; color:#455a64;">반장</div>
+            <div class="content-area"><div class="grid-box">
+                <div class="person-card" onclick="openModal('유정수','보안반장 (성의/의산연)','010-5316-8065','1970.09.25','2020.09.01')"><span class="pos-tag">보안반장</span><span class="name-text">유정수</span></div>
+                <div class="person-card" onclick="openModal('오제준','보안반장 (옴니버스)','010-3352-8933','1970.03.29','2022.05.18')"><span class="pos-tag">보안반장</span><span class="name-text">오제준</span></div>
+            </div></div>
+        </div>
+        <div class="row">
+            <div class="side-label" style="background:var(--a-label); color:var(--a-text)">A조</div>
+            <div class="content-area"><div class="grid-box quad-grid">
+                <div class="person-card card-a" onclick="openModal('배준용','A조 보안조장','010-4717-7065','1969.12.24','2022.07.26')"><span class="pos-tag">성의회관</span><span class="name-text name-small">배준용</span></div>
+                <div class="person-card card-a" onclick="openModal('이명구','A조 보안조원','010-8638-5819','1964.09.15','2025.03.21')"><span class="pos-tag">성의회관</span><span class="name-text name-small">이명구</span></div>
+                <div class="person-card card-a" onclick="openModal('손병휘','A조 옴니조장','010-9966-2090','1972.05.23','2016.05.05')"><span class="pos-tag">옴니조장</span><span class="name-text name-small">손병휘</span></div>
+                <div class="person-card card-a" onclick="openModal('권순호','A조 옴니대원','010-2539-1799','1980.12.14','2026.02.11')"><span class="pos-tag">옴니대원</span><span class="name-text name-small">권순호</span></div>
+                <div class="person-card card-a" onclick="openModal('김영중','A조 보안조원','010-7726-5963','1959.02.26','2024.08.21')"><span class="pos-tag">의산연</span><span class="name-text name-small">김영중</span></div>
+                <div class="person-card card-a" onclick="openModal('김삼동','A조 보안조원','010-2345-8081','1967.02.01','2025.05.02')"><span class="pos-tag">의산연</span><span class="name-text name-small">김삼동</span></div>
+                <div class="person-card card-a" onclick="openModal('김전식','A조 옴니대원','010-3277-0808','1966.07.23','2025.02.10')"><span class="pos-tag">옴니대원</span><span class="name-text name-small">김전식</span></div>
+                <div class="person-card empty-card"></div>
+            </div></div>
+        </div>
+        </div>
+</div>
+
+<div id="clean-container" class="main-container">
+    <div class="sub-tabs">
+        <div id="stab-sh" class="sub-tab-item active" onclick="switchSubTab('sh')">🏢 성의회관</div>
+        <div id="stab-is" class="sub-tab-item" onclick="switchSubTab('is')">🔬 의산연/별관</div>
+    </div>
+    <div id="sh-clean" class="clean-container active">
+        <div class="card">
+            <div class="header sh-bg">성의회관 미화팀 (26.06)</div>
+            <table>
+                <thead><tr><th>위치</th><th>성명</th><th>연락처</th><th>비고</th></tr></thead>
+                <tbody>
+                    <tr><td>14층</td><td>유순복</td><td><a href="tel:01063700845" class="tel-link">010-6370</a></td><td>B조(1)</td></tr>
+                    </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    function switchMainTab(type) {
+        document.querySelectorAll('.main-tab-item').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.main-container').forEach(c => c.classList.remove('active'));
+        document.getElementById('tab-' + type).classList.add('active');
+        document.getElementById(type + '-container').classList.add('active');
+    }
+    function switchSubTab(loc) {
+        document.querySelectorAll('.sub-tab-item').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.clean-container').forEach(c => c.classList.remove('active'));
+        document.getElementById('stab-' + loc).classList.add('active');
+        document.getElementById(loc + '-clean').classList.add('active');
+    }
+    function openModal(name, pos, tel, birth, entry) {
+        document.getElementById('m-name').innerText = name;
+        document.getElementById('m-pos').innerText = pos;
+        document.getElementById('m-birth').innerText = birth;
+        document.getElementById('m-entry').innerText = entry;
+        document.getElementById('m-tel').innerText = tel;
+        document.getElementById('m-link').href = "tel:" + tel.replace(/-/g, "");
+        document.getElementById('modal').style.display = 'flex';
+    }
+    function closeModal() { document.getElementById('modal').style.display = 'none'; }
+</script>
+</body>
+</html>
