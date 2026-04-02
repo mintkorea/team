@@ -1,280 +1,257 @@
-
 <!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>성의교정 대관 현황 관리</title>
+    <title>성의교정 대관 현황 시스템</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
     <style>
-        :root { --primary: #1E3A5F; --accent: #e74c3c; --bg: #f4f7f9; }
-        body { font-family: 'Pretendard', -apple-system, sans-serif; background: var(--bg); margin: 0; padding: 20px; color: #333; }
-        .container { max-width: 900px; margin: 0 auto; background: white; padding: 25px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
+        :root { --primary: #1E3A5F; --accent: #e74c3c; --bg: #f0f2f5; --border: #d1d9e6; }
+        body { font-family: 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif; background: var(--bg); margin: 0; padding: 20px; }
+        .app-container { max-width: 1000px; margin: 0 auto; background: white; padding: 30px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
         
-        h1 { text-align: center; color: var(--primary); font-size: 26px; margin-bottom: 25px; letter-spacing: -1px; }
-        
-        /* 설정 패널 */
-        .config-card { background: #fff; border: 1px solid #e1e4e8; border-radius: 12px; padding: 20px; margin-bottom: 20px; }
-        .row { display: flex; gap: 15px; margin-bottom: 15px; flex-wrap: wrap; }
-        .col { flex: 1; min-width: 200px; }
-        label { display: block; font-size: 13px; font-weight: 700; margin-bottom: 8px; color: #666; }
-        input, select { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; outline: none; }
-        input:focus { border-color: var(--primary); }
+        header { text-align: center; margin-bottom: 30px; border-bottom: 2px solid var(--primary); padding-bottom: 15px; }
+        h1 { color: var(--primary); margin: 0; font-size: 28px; }
 
-        .btn-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        button { border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.2s; font-size: 14px; }
-        .btn-fetch { background: var(--primary); color: white; }
-        .btn-fetch:hover { background: #132a46; }
+        /* 제어판 */
+        .control-panel { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; background: #f8f9fa; padding: 20px; border-radius: 12px; margin-bottom: 25px; border: 1px solid var(--border); }
+        .input-group { display: flex; flex-direction: column; gap: 5px; }
+        label { font-weight: bold; font-size: 13px; color: #444; }
+        input, select { padding: 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 14px; }
+        
+        .btn-group { grid-column: 1 / -1; display: flex; gap: 10px; margin-top: 10px; }
+        button { flex: 1; padding: 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        .btn-refresh { background: var(--primary); color: white; }
         .btn-excel { background: #27ae60; color: white; }
-        .btn-excel:hover { background: #1e8449; }
+        button:hover { opacity: 0.9; transform: translateY(-1px); }
 
-        /* 출력 스타일 */
-        .date-section { margin-top: 30px; }
-        .date-header { background: #343a40; color: white; padding: 12px; border-radius: 8px; text-align: center; font-weight: bold; font-size: 16px; margin-bottom: 15px; }
-        .bu-group { margin-bottom: 20px; }
-        .bu-title { font-size: 16px; font-weight: bold; color: var(--primary); padding: 8px 12px; background: #ebf0f6; border-left: 5px solid var(--primary); margin-bottom: 10px; border-radius: 0 4px 4px 0; }
+        /* 출력 영역 */
+        .day-container { margin-bottom: 40px; }
+        .day-title { background: #343a40; color: white; padding: 12px; border-radius: 8px; font-weight: bold; text-align: center; font-size: 17px; margin-bottom: 15px; }
+        .bu-section { margin-bottom: 20px; }
+        .bu-name { font-size: 17px; font-weight: bold; color: var(--primary); border-left: 6px solid var(--primary); padding: 5px 15px; background: #ebf0f6; margin-bottom: 10px; }
         
-        .item-card { background: white; border: 1px solid #eee; border-radius: 8px; padding: 12px; margin-bottom: 8px; transition: transform 0.1s; }
-        .item-card:hover { transform: translateY(-2px); border-color: #ddd; }
-        .item-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
-        .place { font-weight: 800; color: var(--primary); }
-        .time { color: var(--accent); font-weight: 700; font-size: 13px; }
-        .status { font-size: 11px; padding: 2px 6px; border-radius: 4px; background: #2ecc71; color: white; font-weight: bold; }
-        .item-bottom { font-size: 12px; color: #666; border-top: 1px solid #f9f9f9; padding-top: 6px; line-height: 1.5; }
+        .rental-card { display: flex; flex-direction: column; background: white; border: 1px solid #eee; padding: 15px; border-radius: 10px; margin-bottom: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.03); }
+        .card-row1 { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .place-tag { font-weight: 900; color: var(--primary); font-size: 15px; }
+        .time-tag { color: var(--accent); font-weight: bold; }
+        .status-tag { font-size: 11px; padding: 3px 8px; border-radius: 4px; background: #2ecc71; color: white; }
+        .card-row2 { font-size: 13px; color: #555; line-height: 1.6; border-top: 1px solid #f5f5f5; padding-top: 8px; }
 
-        .loading-overlay { display: none; text-align: center; padding: 30px; color: var(--primary); font-weight: bold; }
-        .no-data { text-align: center; padding: 20px; color: #999; font-size: 13px; border: 1px dashed #ccc; border-radius: 8px; }
+        .loading { text-align: center; padding: 50px; font-weight: bold; color: var(--primary); display: none; }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h1>🏫 성의교정 대관 현황 조회</h1>
+<div class="app-container">
+    <header>
+        <h1>🏫 성의교정 대관 현황 관리</h1>
+    </header>
 
-    <div class="config-card">
-        <div class="row">
-            <div class="col">
-                <label>시작 날짜</label>
-                <input type="date" id="startDate">
-            </div>
-            <div class="col">
-                <label>종료 날짜</label>
-                <input type="date" id="endDate">
-            </div>
+    <div class="control-panel">
+        <div class="input-group">
+            <label>시작일</label>
+            <input type="date" id="startDate">
         </div>
-        <div class="row">
-            <div class="col">
-                <label>건물 선택 (다중 선택 가능)</label>
-                <select id="buFilter" multiple style="height: 100px;">
-                    <option value="전체" selected>전체 건물 보기</option>
-                    <option value="성의회관">성의회관</option>
-                    <option value="의생명산업연구원">의생명산업연구원</option>
-                    <option value="옴니버스 파크">옴니버스 파크</option>
-                    <option value="옴니버스파크 의과대학">옴니버스파크 의과대학</option>
-                    <option value="옴니버스파크 간호대학">옴니버스파크 간호대학</option>
-                    <option value="대학본관">대학본관</option>
-                    <option value="서울성모별관">서울성모별관</option>
-                </select>
-                <small style="color:#888; font-size:11px;">* Ctrl 키를 누르고 클릭하면 중복 선택 가능</small>
-            </div>
+        <div class="input-group">
+            <label>종료일</label>
+            <input type="date" id="endDate">
+        </div>
+        <div class="input-group">
+            <label>건물 필터</label>
+            <select id="buFilter">
+                <option value="전체">전체 건물 보기</option>
+            </select>
         </div>
         <div class="btn-group">
-            <button class="btn-fetch" onclick="fetchAndRender()">🔄 데이터 불러오기</button>
-            <button class="btn-excel" onclick="downloadExcel()">📥 엑셀 저장 (편집완료)</button>
+            <button class="btn-refresh" onclick="loadData()">🔄 구글시트 데이터 동기화</button>
+            <button class="btn-excel" onclick="exportToExcel()">📥 완성형 엑셀 다운로드</button>
         </div>
     </div>
 
-    <div id="loading" class="loading-overlay">⏳ 서버에서 데이터를 가져오고 있습니다...</div>
-    <div id="displayArea"></div>
+    <div id="loading" class="loading">📡 구글 시트에서 최신 정보를 가져오고 있습니다...</div>
+    <div id="output"></div>
 </div>
 
 <script>
+    // 1. 여기에 본인의 구글 시트 CSV 주소를 넣으세요.
+    const SHEET_URL = "YOUR_SHEET_CSV_URL_HERE"; 
+    
     const BUILDINGS = ["성의회관", "의생명산업연구원", "옴니버스 파크", "옴니버스파크 의과대학", "옴니버스파크 간호대학", "대학본관", "서울성모별관"];
     const WEEKDAYS = ["일", "월", "화", "수", "목", "금", "토"];
-    let globalData = [];
+    let rawData = [];
 
-    // 날짜 초기값 세팅
-    const today = new Date().toISOString().split('T')[0];
-    document.getElementById('startDate').value = today;
-    document.getElementById('endDate').value = today;
+    // 날짜 초기화 (오늘 날짜)
+    const todayStr = new Date().toISOString().split('T')[0];
+    document.getElementById('startDate').value = todayStr;
+    document.getElementById('endDate').value = todayStr;
+
+    // 건물 필터 옵션 추가
+    const select = document.getElementById('buFilter');
+    BUILDINGS.forEach(b => {
+        let opt = document.createElement('option');
+        opt.value = b; opt.innerText = b;
+        select.appendChild(opt);
+    });
 
     function getShift(dateStr) {
-        const base = new Date('2026-03-13'); // C조 시작 기준일
+        const base = new Date('2026-03-13'); // C조 기준일
         const target = new Date(dateStr);
-        const diff = Math.floor((target - base) / (86400000));
+        const diff = Math.floor((target - base) / 86400000);
         const shifts = ['A', 'B', 'C'];
         let idx = diff % 3;
         if (idx < 0) idx += 3;
         return shifts[idx] + "조";
     }
 
-    async function fetchAndRender() {
-        const start = document.getElementById('startDate').value;
-        const end = document.getElementById('endDate').value;
+    async function loadData() {
         const loading = document.getElementById('loading');
-        const area = document.getElementById('displayArea');
-
-        if (!start || !end) { alert("날짜를 선택해주세요."); return; }
-
+        const output = document.getElementById('output');
         loading.style.display = 'block';
-        area.innerHTML = '';
+        output.innerHTML = '';
 
-        // CORS 해결을 위해 AllOrigins 프록시 사용
-        const targetUrl = `https://songeui.catholic.ac.kr/ko/service/application-for-rental_calendar.do?mode=getReservedData&start=${start}&end=${end}`;
-        const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(targetUrl)}`;
-
-        try {
-            const resp = await fetch(proxyUrl);
-            const json = await resp.json();
-            const result = JSON.parse(json.contents);
-            globalData = result.res || [];
-            
-            renderUI(start, end);
-        } catch (e) {
-            console.error(e);
-            alert("데이터를 불러오지 못했습니다. 잠시 후 다시 시도해주세요.");
-        } finally {
-            loading.style.display = 'none';
-        }
+        Papa.parse(SHEET_URL, {
+            download: true,
+            header: true,
+            complete: function(results) {
+                rawData = results.data;
+                renderUI();
+                loading.style.display = 'none';
+            },
+            error: function() {
+                alert("구글 시트 주소를 확인해주세요. (웹에 게시 여부 확인)");
+                loading.style.display = 'none';
+            }
+        });
     }
 
-    function renderUI(start, end) {
-        const area = document.getElementById('displayArea');
-        const selectedOptions = Array.from(document.getElementById('buFilter').selectedOptions).map(o => o.value);
+    function renderUI() {
+        const start = document.getElementById('startDate').value;
+        const end = document.getElementById('endDate').value;
+        const filter = document.getElementById('buFilter').value;
+        const output = document.getElementById('output');
+        
         let html = '';
-
         let curr = new Date(start);
         const last = new Date(end);
 
         while (curr <= last) {
             const dStr = curr.toISOString().split('T')[0];
-            const dayOfWeek = WEEKDAYS[curr.getDay()];
+            const filtered = rawData.filter(d => d['날짜'] === dStr);
             
-            html += `<div class="date-section">
-                        <div class="date-header">📅 ${dStr} (${dayOfWeek}요일) | ${getShift(dStr)}</div>`;
+            html += `<div class="day-container">
+                        <div class="day-title">📅 ${dStr} (${WEEKDAYS[curr.getDay()]}요일) | ${getShift(dStr)}</div>`;
 
             BUILDINGS.forEach(bu => {
-                if (!selectedOptions.includes("전체") && !selectedOptions.includes(bu)) return;
-
-                // API 데이터 중 해당 날짜와 건물 매칭 (공백 제거 후 비교)
-                const filtered = globalData.filter(d => 
-                    d.startDt === dStr && (d.buNm || '').replace(/\s/g,'') === bu.replace(/\s/g,'')
-                );
-
-                html += `<div class="bu-group">
-                            <div class="bu-title">🏢 ${bu} (${filtered.length}건)</div>`;
+                if (filter !== "전체" && filter !== bu) return;
+                const buData = filtered.filter(d => (d['건물명']||'').trim() === bu);
                 
-                if (filtered.length > 0) {
-                    filtered.forEach(item => {
+                html += `<div class="bu-section">
+                            <div class="bu-name">🏢 ${bu} (${buData.length}건)</div>`;
+                
+                if(buData.length > 0) {
+                    buData.forEach(item => {
                         html += `
-                            <div class="item-card">
-                                <div class="item-top">
-                                    <span class="place">📍 ${item.placeNm}</span>
-                                    <span class="time">🕒 ${item.startTime} ~ ${item.endTime}</span>
-                                    <span class="status">${item.status === 'Y' ? '확정' : '대기'}</span>
+                            <div class="rental-card">
+                                <div class="card-row1">
+                                    <span class="place-tag">📍 ${item['장소']}</span>
+                                    <span class="time-tag">🕒 ${item['시작시간']}~${item['종료시간']}</span>
+                                    <span class="status-tag">${item['상태']}</span>
                                 </div>
-                                <div class="item-bottom">
-                                    <b>행사:</b> ${item.eventNm}<br>
-                                    <b>부서:</b> ${item.mgDeptNm} (${item.peopleCount}명)
+                                <div class="card-row2">
+                                    <b>행사:</b> ${item['행사명']}<br>
+                                    <b>부서:</b> ${item['부서']} (${item['인원']}명)
                                 </div>
                             </div>`;
                     });
                 } else {
-                    html += `<div class="no-data">대관 내역이 없습니다.</div>`;
+                    html += `<div style="text-align:center; color:#999; font-size:12px; padding:10px;">기록 없음</div>`;
                 }
                 html += `</div>`;
             });
             html += `</div>`;
             curr.setDate(curr.getDate() + 1);
         }
-        area.innerHTML = html;
+        output.innerHTML = html;
     }
 
-    async function downloadExcel() {
-        if (globalData.length === 0) { alert("데이터를 먼저 불러와주세요."); return; }
-
+    async function exportToExcel() {
         const workbook = new ExcelJS.Workbook();
         const sheet = workbook.addWorksheet('대관현황');
         
-        // 엑셀 기본 열 너비
+        // 시트 전체 설정
         sheet.columns = [
-            { width: 20 }, { width: 15 }, { width: 35 }, { width: 20 }, { width: 10 }, { width: 10 }
+            { width: 22 }, { width: 14 }, { width: 35 }, { width: 20 }, { width: 10 }, { width: 10 }
         ];
 
-        let rowIdx = 1;
-
+        let rIdx = 1;
         const start = document.getElementById('startDate').value;
         const end = document.getElementById('endDate').value;
         let curr = new Date(start);
-        const last = new Date(end);
 
-        while (curr <= last) {
+        while (curr <= new Date(end)) {
             const dStr = curr.toISOString().split('T')[0];
             
-            // 날짜 헤더 (진한 회색 배경)
-            const dateRow = sheet.getRow(rowIdx);
-            sheet.mergeCells(rowIdx, 1, rowIdx, 6);
-            dateRow.getCell(1).value = `📅 ${dStr} (${WEEKDAYS[curr.getDay()]}요일) | ${getShift(dStr)}`;
-            dateRow.getCell(1).fill = { type: 'pattern', pattern:'solid', fgColor:{argb:'FF343A40'} };
-            dateRow.getCell(1).font = { color: {argb:'FFFFFFFF'}, bold: true };
-            dateRow.getCell(1).alignment = { horizontal: 'center' };
-            rowIdx++;
+            // 날짜 헤더
+            sheet.mergeCells(rIdx, 1, rIdx, 6);
+            const dRow = sheet.getRow(rIdx);
+            dRow.getCell(1).value = `📅 ${dStr} (${WEEKDAYS[curr.getDay()]}요일) | ${getShift(dStr)}`;
+            dRow.getCell(1).fill = { type: 'pattern', pattern:'solid', fgColor:{argb:'FF343A40'} };
+            dRow.getCell(1).font = { color:{argb:'FFFFFFFF'}, bold:true };
+            dRow.getCell(1).alignment = { horizontal:'center' };
+            rIdx++;
 
             BUILDINGS.forEach(bu => {
-                const filtered = globalData.filter(d => 
-                    d.startDt === dStr && (d.buNm || '').replace(/\s/g,'') === bu.replace(/\s/g,'')
-                );
+                const buData = rawData.filter(d => d['날짜'] === dStr && (d['건물명']||'').trim() === bu);
+                
+                sheet.mergeCells(rIdx, 1, rIdx, 6);
+                const bRow = sheet.getRow(rIdx);
+                bRow.getCell(1).value = `🏢 ${bu} (${buData.length}건)`;
+                bRow.getCell(1).fill = { type: 'pattern', pattern:'solid', fgColor:{argb:'FFD9E1F2'} };
+                bRow.getCell(1).font = { color:{argb:'FF1E3A5F'}, bold:true };
+                rIdx++;
 
-                // 건물명 (연한 파란색 배경)
-                sheet.mergeCells(rowIdx, 1, rowIdx, 6);
-                const buRow = sheet.getRow(rowIdx);
-                buRow.getCell(1).value = `🏢 ${bu} (${filtered.length}건)`;
-                buRow.getCell(1).fill = { type: 'pattern', pattern:'solid', fgColor:{argb:'FFD9E1F2'} };
-                buRow.getCell(1).font = { color: {argb:'FF1E3A5F'}, bold: true };
-                rowIdx++;
-
-                // 테이블 헤더
-                const headRow = sheet.getRow(rowIdx);
-                ['장소', '시간', '행사명', '부서', '인원', '상태'].forEach((t, i) => {
-                    const c = headRow.getCell(i+1);
-                    c.value = t;
+                // 표 헤더
+                const hRow = sheet.getRow(rIdx);
+                ['장소', '시간', '행사명', '부서', '인원', '상태'].forEach((v, i) => {
+                    const c = hRow.getCell(i+1);
+                    c.value = v;
                     c.fill = { type: 'pattern', pattern:'solid', fgColor:{argb:'FFF2F2F2'} };
                     c.border = { top:{style:'thin'}, left:{style:'thin'}, bottom:{style:'thin'}, right:{style:'thin'} };
-                    c.alignment = { horizontal: 'center' };
+                    c.alignment = { horizontal:'center' };
                 });
-                rowIdx++;
+                rIdx++;
 
-                // 데이터
-                if (filtered.length === 0) {
-                    sheet.mergeCells(rowIdx, 1, rowIdx, 6);
-                    sheet.getRow(rowIdx).getCell(1).value = "내역 없음";
-                    sheet.getRow(rowIdx).getCell(1).alignment = { horizontal: 'center' };
-                    rowIdx++;
+                if (buData.length === 0) {
+                    sheet.mergeCells(rIdx, 1, rIdx, 6);
+                    sheet.getRow(rIdx).getCell(1).value = "- 대관 내역 없음 -";
+                    sheet.getRow(rIdx).getCell(1).alignment = { horizontal:'center' };
+                    rIdx++;
                 } else {
-                    filtered.forEach(item => {
-                        const r = sheet.getRow(rowIdx);
-                        const vals = [item.placeNm, `${item.startTime}~${item.endTime}`, item.eventNm, item.mgDeptNm, item.peopleCount, item.status==='Y'?'확정':'대기'];
+                    buData.forEach(item => {
+                        const row = sheet.getRow(rIdx);
+                        const vals = [item['장소'], `${item['시작시간']}~${item['종료시간']}`, item['행사명'], item['부서'], item['인원'], item['상태']];
                         vals.forEach((v, i) => {
-                            const c = r.getCell(i+1);
+                            const c = row.getCell(i+1);
                             c.value = v;
                             c.border = { top:{style:'thin'}, left:{style:'thin'}, bottom:{style:'thin'}, right:{style:'thin'} };
-                            c.alignment = { vertical: 'middle', wrapText: true };
+                            c.alignment = { vertical:'middle', wrapText:true };
                         });
-                        r.height = 30;
-                        rowIdx++;
+                        row.height = 32;
+                        rIdx++;
                     });
                 }
-                rowIdx++; // 건물 간 간격
+                rIdx++; // 건물 간 여백
             });
-            rowIdx++; // 날짜 간 간격
+            rIdx++; // 날짜 간 여백
             curr.setDate(curr.getDate() + 1);
         }
 
         const buffer = await workbook.xlsx.writeBuffer();
-        saveAs(new Blob([buffer]), `성의교정_대관현황_${start}_to_${end}.xlsx`);
+        saveAs(new Blob([buffer]), `성의교정_대관현황_${start}_${end}.xlsx`);
     }
 </script>
-
 </body>
 </html>
