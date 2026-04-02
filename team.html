@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>C조 통합 근무 시스템 v6.5</title>
+    <title>C조 통합 근무 시스템 v6.1</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap');
-        body { font-family: 'Noto Sans KR', sans-serif; background-color: #f1f5f9; margin: 0; -webkit-tap-highlight-color: transparent; }
+        body { font-family: 'Noto Sans KR', sans-serif; background-color: #f1f5f9; -webkit-tap-highlight-color: transparent; margin: 0; }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
         .nav-tab.active { color: #2E4077; border-bottom: 3px solid #2E4077; background-color: white; }
@@ -18,19 +18,19 @@
         .worker-card { background: white; padding: 10px 5px; border-radius: 14px; border: 1px solid #e2e8f0; text-align: center; }
         .worker-name { font-size: 10px; font-weight: 800; color: #64748b; }
         .worker-pos { font-size: 14px; font-weight: 900; color: #1e293b; }
-        .big-msg-box { background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); color: #1e40af; padding: 22px 15px; border-radius: 20px; text-align: center; font-weight: 900; margin-bottom: 16px; border: 1px solid #bfdbfe; font-size: 18px; line-height: 1.6; }
+        .big-msg-box { background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); color: #1e40af; padding: 20px; border-radius: 20px; text-align: center; font-weight: 900; font-size: 18px; line-height: 1.6; margin-bottom: 16px; border: 1px solid #bfdbfe; }
         .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); border-top: 1px solid #e2e8f0; border-left: 1px solid #e2e8f0; background: white; }
         .calendar-cell { border-right: 1px solid #e2e8f0; border-bottom: 1px solid #e2e8f0; display: flex; flex-direction: column; aspect-ratio: 1 / 1.3; }
         .sunday { color: #ef4444 !important; }
         .saturday { color: #3b82f6 !important; }
-        .is-today-logic { outline: 3px solid #ef4444; outline-offset: -3px; z-index: 10; }
+        .is-today { outline: 3px solid #ef4444; outline-offset: -3px; z-index: 10; }
     </style>
 </head>
 <body>
     <div class="max-w-md mx-auto bg-white min-h-screen shadow-lg flex flex-col">
         <div class="bg-[#2E4077] p-6 text-center text-white">
-            <h1 class="text-xl font-black">🛡️ C조 통합 근무 시스템 v6.5</h1>
-            <p id="current-time" class="text-[10px] opacity-70 mt-1.5 font-medium"></p>
+            <h1 class="text-xl font-black">🛡️ C조 통합 근무 시스템</h1>
+            <p id="current-time" class="text-[10px] opacity-70 mt-1.5"></p>
         </div>
 
         <div class="flex border-b bg-slate-50 sticky top-0 z-50">
@@ -64,45 +64,40 @@
     </div>
 
     <script>
-        const config = { baseDate: '2025-01-01', patterns: [{name:'C', color:'#E3F2FD', highlight:'#1976D2'},{name:'A', color:'#FFF3E0', highlight:'#F57C00'},{name:'B', color:'#FFEBEE', highlight:'#D32F2F'}] };
+        const config = { baseDate: '2026-03-09', patterns: [{name:'C', color:'#E3F2FD', highlight:'#1976D2'},{name:'A', color:'#FFF3E0', highlight:'#F57C00'},{name:'B', color:'#FFEBEE', highlight:'#D32F2F'}] };
         const WORKER_COLS = {"황재업":"#D9EAD3","김태언":"#FFF2CC","이태원":"#EAD1DC","이정석":"#C9DAF8"};
         const DATA_LIST = [["07:00", "08:00", "보안실", "로비", "로비", "휴게"], ["08:00", "09:00", "보안실", "휴게", "휴게", "로비"], ["09:00", "10:00", "보안실", "순찰", "휴게", "로비"], ["10:00", "11:00", "휴게", "보안실", "로비", "휴게"], ["11:00", "12:00", "보안실", "중식", "로비", "중식"], ["12:00", "13:00", "중식", "보안실", "중식", "로비"], ["13:00", "14:00", "보안실", "휴게", "순찰", "로비"], ["14:00", "15:00", "순찰", "보안실", "로비", "휴게"], ["15:00", "16:00", "보안실", "휴게", "로비", "휴게"], ["16:00", "17:00", "휴게", "보안실", "휴게", "로비"], ["17:00", "18:00", "보안실", "휴게", "휴게", "로비"], ["18:00", "19:00", "보안실", "석식", "로비", "석식"], ["19:00", "20:00", "보안실", "보안실", "석식", "로비"], ["20:00", "21:00", "석식", "보안실", "로비", "휴게"], ["21:00", "22:00", "보안실", "순찰", "로비", "휴게"], ["22:00", "23:00", "순찰", "보안실", "순찰", "로비"], ["23:00", "00:00", "보안실", "휴게", "휴게", "로비"], ["00:00", "01:00", "보안실", "휴게", "휴게", "로비"], ["01:00", "01:40", "보안실", "휴게", "휴게", "로비"], ["01:40", "02:00", "보안실", "보안실", "로비", "로비"], ["02:00", "03:00", "휴게", "보안실", "로비", "휴게"], ["03:00", "04:00", "휴게", "보안실", "로비", "휴게"], ["04:00", "05:00", "휴게", "보안실", "로비", "휴게"], ["05:00", "06:00", "보안실", "순찰", "로비", "순찰"], ["06:00", "07:00", "보안실", "정리", "로비", "정리"]];
 
-        // [날짜 로직 핵심] 07시 기준 날짜 변경 (이것이 모든 계산의 기준)
+        // [핵심] 달력과 동일한 날짜 계산 로직 (오전 7시 기준 날짜 변경)
         function getLogicDate(d) {
             const date = new Date(d);
             if (date.getHours() < 7) date.setDate(date.getDate() - 1);
-            date.setHours(0,0,0,0);
-            return date;
+            date.setHours(0,0,0,0); return date;
         }
 
-        // 패턴 계산
         function getShift(d) {
-            const lDate = getLogicDate(d);
-            const base = new Date(config.baseDate).setHours(0,0,0,0);
-            const diff = Math.floor((lDate - base) / 86400000);
+            const diff = Math.floor((getLogicDate(d) - new Date(config.baseDate).setHours(0,0,0,0)) / 86400000);
             return config.patterns[((diff % 3) + 3) % 3];
         }
 
-        // 명단 추출
+        // [핵심] C조 근무자 명단 고정 (달력 날짜 기반)
         function getWorkers(d) {
             const lDate = getLogicDate(d);
             if (getShift(lDate).name !== 'C') return null;
-            const base = new Date(config.baseDate).setHours(0,0,0,0);
-            const diffDays = Math.round((lDate - base) / 86400000);
+            const diffDays = Math.round((lDate - new Date(config.baseDate).setHours(0,0,0,0)) / 86400000);
             const ps = [["황재업", "김태언", "이태원", "이정석"], ["황재업", "김태언", "이정석", "이태원"], ["황재업", "이정석", "김태언", "이태원"], ["황재업", "이정석", "이태원", "김태언"], ["황재업", "이태원", "김태언", "이정석"], ["황재업", "이태원", "이정석", "김태언"]];
             return ps[((Math.floor(diffDays / 3) % 6) + 6) % 6];
         }
 
         function renderStatus() {
-            const now = new Date(), lDate = getLogicDate(now), shift = getShift(now), isC = shift.name === 'C';
+            const now = new Date(), lDate = getLogicDate(now), isC = getShift(lDate).name === 'C';
             const hr = now.getHours(), min = now.getMinutes();
             let totalMin = hr * 60 + min; if (hr < 7) totalMin += 1440;
 
-            let msg = isC ? "🛡️ 현재 C조 근무 시간입니다.<br>안전에 만전을 기해 주십시오!" : "😴 오늘은 휴무일입니다.<br>편안한 휴식 되세요.";
+            let msg = isC ? "🛡️ 현재 C조 근무 시간입니다.<br>오늘도 안전에 만전을 기해 주십시오!" : "😴 오늘은 휴무일입니다.<br>편안한 휴식 되세요.";
             document.getElementById('time-msg').innerHTML = `<div class="${!isC ? 'big-msg-box' : 'bg-blue-50 text-[#2E4077] p-4 rounded-2xl text-center font-bold text-[14px] mb-4'}">${msg}</div>`;
 
-            // 다음 근무일 계산 (Logic 오늘 이후 첫 C조)
+            // 다음 근무일 계산 (달력 패턴 기반)
             let nextD = new Date(lDate);
             do { nextD.setDate(nextD.getDate() + 1); } while (getShift(nextD).name !== 'C');
             document.getElementById('next-duty-notice').innerText = `다음 근무는 ${nextD.getMonth()+1}월 ${nextD.getDate()}일 입니다.`;
@@ -120,52 +115,48 @@
                 const curPos = (curIdx !== -1) ? DATA_LIST[curIdx] : ["-","-","휴게","휴게","휴게","휴게"];
                 cardArea.innerHTML = currentWs.map((w, idx) => `<div class="worker-card" style="border-left: 4px solid ${WORKER_COLS[w]||'#eee'}"><div class="worker-name">${['조장','성희','의산A','의산B'][idx]} ${w}</div><div class="worker-pos">${curPos[idx+2]}</div></div>`).join('');
                 
+                // 테이블 렌더링
                 let h = `<thead><tr><th rowspan="2" class="bg-slate-100">시간</th><th colspan="2">성의회관</th><th colspan="2">의생명산업연구원</th></tr><tr><th>${currentWs[0]}</th><th>${currentWs[1]}</th><th>${currentWs[2]}</th><th>${currentWs[3]}</th></tr></thead><tbody>`;
                 DATA_LIST.forEach((r, i) => {
                     h += `<tr ${i === curIdx ? 'class="bg-orange-50 font-bold outline outline-1 outline-red-400"' : ''}><td>${r[0]}~${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td><td>${r[4]}</td><td>${r[5]}</td></tr>`;
                 });
                 document.getElementById('status-table').innerHTML = h + "</tbody>";
             } else cardArea.classList.add('hidden');
+
             document.getElementById('current-time').innerText = now.toLocaleString();
         }
 
         function renderSchedule() {
             let h = `<thead><tr><th>날짜</th><th>조장</th><th>성희</th><th>의산A</th><th>의산B</th></tr></thead><tbody>`;
-            let now = new Date();
-            let start = getLogicDate(now);
-            for (let i = 0; i < 45; i++) {
-                let d = new Date(start); d.setDate(d.getDate() + i);
+            for (let i = 0; i < 60; i++) {
+                let d = new Date(); d.setDate(d.getDate() + i);
                 const ws = getWorkers(d);
                 if (ws) {
-                    const dayStr = ['일','월','화','수','목','금','토'][d.getDay()];
-                    h += `<tr><td class="bg-slate-50 font-bold">${d.getMonth()+1}/${d.getDate()}(${dayStr})</td><td>${ws[0]}</td><td>${ws[1]}</td><td>${ws[2]}</td><td>${ws[3]}</td></tr>`;
+                    const lDate = getLogicDate(d);
+                    h += `<tr><td class="bg-slate-50 font-bold">${lDate.getMonth()+1}/${lDate.getDate()}</td><td>${ws[0]}</td><td>${ws[1]}</td><td>${ws[2]}</td><td>${ws[3]}</td></tr>`;
                 }
             }
             document.getElementById('schedule-list').innerHTML = h + "</tbody>";
         }
 
+        function openTab(id) { 
+            document.querySelectorAll('.tab-content, .nav-tab').forEach(el => el.classList.remove('active'));
+            document.getElementById(id).classList.add('active'); document.getElementById('btn-'+id).classList.add('active');
+            if(id === 'calendar') renderCalendar(); else if(id === 'schedule') renderSchedule();
+        }
+
         function renderCalendar() {
-            const now = new Date(); const logicTodayStr = getLogicDate(now).toDateString();
-            const grid = document.getElementById('calendar-grid-body'); grid.innerHTML = '';
+            const now = new Date(); const grid = document.getElementById('calendar-grid-body'); grid.innerHTML = '';
             document.getElementById('cal-title').innerText = `${now.getFullYear()}년 ${now.getMonth()+1}월`;
             const first = new Date(now.getFullYear(), now.getMonth(), 1).getDay(), last = new Date(now.getFullYear(), now.getMonth()+1, 0).getDate();
             for(let i=0; i<first; i++) grid.innerHTML += `<div class="calendar-cell bg-slate-50"></div>`;
             for(let d=1; d<=last; d++) {
-                const dt = new Date(now.getFullYear(), now.getMonth(), d); 
-                const shift = getShift(dt);
-                const isLogicToday = dt.toDateString() === logicTodayStr;
-                const isC = shift.name === 'C';
-                grid.innerHTML += `<div class="calendar-cell ${isLogicToday?'is-today-logic':''}" style="background:${isC?shift.highlight:'transparent'}">
-                    <div class="text-center font-bold text-[10px] ${isC?'text-white':'text-slate-600'}">${d}</div>
-                    <div class="text-center font-black ${isC?'text-white':'text-slate-800'}" style="background:${isC?'transparent':shift.color}">${shift.name}</div>
+                const dt = new Date(now.getFullYear(), now.getMonth(), d), shift = getShift(dt);
+                grid.innerHTML += `<div class="calendar-cell ${dt.toDateString()===now.toDateString()?'is-today':''}" style="background:${shift.name==='C'?shift.highlight:'transparent'}">
+                    <div class="text-center font-bold text-[10px] ${shift.name==='C'?'text-white':'text-slate-600'}">${d}</div>
+                    <div class="text-center font-black ${shift.name==='C'?'text-white':'text-slate-800'}" style="background:${shift.name==='C'?'transparent':shift.color}">${shift.name}</div>
                 </div>`;
             }
-        }
-
-        function openTab(id) { 
-            document.querySelectorAll('.tab-content, .nav-tab').forEach(el => el.classList.remove('active'));
-            document.getElementById(id).classList.add('active'); document.getElementById('btn-'+id).classList.add('active');
-            if(id === 'calendar') renderCalendar(); else if(id === 'schedule') renderSchedule(); else renderStatus();
         }
 
         window.onload = () => { renderStatus(); renderCalendar(); setInterval(renderStatus, 10000); };
