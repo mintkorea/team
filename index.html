@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>C조 통합 근무 시스템 v5.9.1</title>
+    <title>C조 통합 근무 시스템 v5.9.2</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap');
@@ -56,6 +56,7 @@
             <div id="time-msg"></div>
             <div id="worker-cards" class="status-card-grid"></div>
             <div id="next-duty-notice" class="text-center mb-4 text-[11px] font-black text-slate-500 bg-slate-100 py-3 rounded-xl border border-slate-200"></div>
+            
             <div class="flex justify-between items-center mb-2 px-1">
                 <span class="text-[11px] font-black text-slate-400">🕒 상세 근무 시간표</span>
                 <button onclick="toggleFullTable()" id="toggle-full-table" class="text-[9px] bg-slate-700 text-white px-3 py-1 rounded-full font-bold">전체보기 OFF</button>
@@ -175,25 +176,23 @@
             let totalMin = hr * 60 + min;
             if (totalMin < 420) totalMin += 1440; 
 
+            // 1. 상단 안내 메시지
             let msg = "", isBig = false;
             if (isC) {
                 if (hr >= 0 && hr < 7) {
                     if (hr === 6 && min >= 40) msg = "🤝 C조 근무 교대 준비 시간입니다.";
                     else msg = "🌙 야간 정밀 보안 근무 중입니다.";
-                } else {
-                    msg = "🛡️ 현재 C조 당직 근무 중입니다.";
-                }
+                } else msg = "🛡️ 현재 C조 당직 근무 중입니다.";
             } else {
                 isBig = true;
                 const nextD_msg = getNextDutyDate();
                 const diff = Math.round((nextD_msg - lDate) / 86400000);
-                if (diff === 1) msg = "🗓️ 내일은 C조 근무일입니다.<br>컨디션 조절 잘 하세요! 💪";
-                else msg = "😴 휴무일입니다.<br>편안한 휴식 되세요! ☕";
+                msg = (diff === 1) ? "🗓️ 내일은 C조 근무일입니다.<br>컨디션 조절 잘 하세요! 💪" : "😴 휴무일입니다.<br>편안한 휴식 되세요! ☕";
             }
             document.getElementById('time-msg').innerHTML = `<div class="${isBig ? 'big-msg-box' : 'bg-blue-50 text-[#2E4077] p-5 rounded-2xl text-center font-bold text-[15px] border border-blue-100 mb-4'}">${msg}</div>`;
 
+            // 2. 카드 숨김 로직 (오늘이 C조일 때만 노출)
             const nextD = getNextDutyDate();
-            // 수정: 오늘이 C조가 아니면 다음 근무일(nextD)의 근무자를 가져옴
             const currentWs = isC ? getWorkers(now) : getWorkers(nextD);
             const cardArea = document.getElementById('worker-cards');
             
@@ -201,28 +200,28 @@
             DATA_LIST.forEach((r, i) => {
                 let [sH, sM] = r[0].split(':').map(Number);
                 let sT = (sH < 7 ? sH * 60 + sM + 1440 : sH * 60 + sM);
-                let eT = sT + 60; 
-                if (r[0] === "01:00") eT = 0 * 60 + 100; 
+                let eT = (r[0] === "01:00") ? (0 * 60 + 100) : (sT + 60);
                 if (totalMin >= sT && totalMin < eT) curViewIdx = i;
             });
 
-            // 휴무일에도 카드 영역 표시
-            cardArea.classList.remove('hidden');
-            const curPos = (isC && curViewIdx !== -1) ? DATA_LIST[curViewIdx] : ["-","-","-","-","-","-"];
-            
-            cardArea.innerHTML = currentWs.map((w, idx) => `
-                <div class="worker-card" style="border-top: 4px solid ${WORKER_COLS[w] || '#eee'}">
-                    <div class="worker-name">${['조장','성의','의산A','의산B'][idx]} ${w}</div>
-                    <div class="worker-pos">${isC ? curPos[idx+2] : '대기'}</div>
-                </div>`).join('');
+            if (isC) {
+                cardArea.classList.remove('hidden');
+                const curPos = (curViewIdx !== -1) ? DATA_LIST[curViewIdx] : ["-","-","휴게","휴게","휴게","휴게"];
+                cardArea.innerHTML = currentWs.map((w, idx) => `
+                    <div class="worker-card" style="border-top: 4px solid ${WORKER_COLS[w] || '#eee'}">
+                        <div class="worker-name">${['조장','성의','의산A','의산B'][idx]} ${w}</div>
+                        <div class="worker-pos">${curPos[idx+2]}</div>
+                    </div>`).join('');
+            } else {
+                cardArea.classList.add('hidden'); // 휴무일엔 카드 영역을 완전히 숨김
+            }
 
             document.getElementById('next-duty-notice').innerText = isC ? "현재 C조 근무 중" : `다음 근무일: ${nextD.getMonth()+1}월 ${nextD.getDate()}일`;
 
-            // 테이블 헤더 및 데이터 (isC와 관계없이 상시 렌더링)
+            // 3. 시간표 (오늘이 C조가 아니면 다음 근무일 명단으로 자동 채워짐)
             let h = `<thead><tr><th rowspan="2" class="time-cell">시간</th><th colspan="2">성의회관</th><th colspan="2">의산원</th></tr><tr><th>${currentWs[0]}</th><th>${currentWs[1]}</th><th>${currentWs[2]}</th><th>${currentWs[3]}</th></tr></thead><tbody>`;
             DATA_LIST.forEach((r, i) => {
-                // 전체보기 ON이거나, 현재 이후 시간이거나, 오늘이 C조가 아닐 때 노출
-                if (isFullTable || i >= curViewIdx || !isC) {
+                if (!isC || isFullTable || i >= curViewIdx) {
                     const isNow = isC && i === curViewIdx;
                     h += `<tr ${isNow ? 'style="background-color:#fff7ed; outline:2px solid #ef4444; font-weight:bold;"' : ''}>
                             <td class="time-cell">${r[0]}~${r[1]}</td>
@@ -234,6 +233,7 @@
             document.getElementById('current-time').innerText = now.toLocaleString();
         }
 
+        // --- 이하 기타 기능 (달력, 설정 등) v5.9와 동일 ---
         function renderSchedule() {
             const val = parseInt(document.getElementById('month-slider').value), focus = document.getElementById('worker-focus').value;
             document.getElementById('slider-label').innerText = `조회 범위: ${val>=0?'+':''}${val}개월`;
@@ -250,7 +250,6 @@
             }
             document.getElementById('schedule-list').innerHTML = h + `</tbody>`;
         }
-
         function renderGrid(container, year, month) {
             container.innerHTML = ''; const target = document.getElementById('shiftSelect').value;
             const first = new Date(year, month, 1).getDay(), last = new Date(year, month+1, 0).getDate(), today = new Date().toDateString();
@@ -265,7 +264,6 @@
                 container.appendChild(cell);
             }
         }
-
         function renderCalendar() {
             if(viewMode === 'single') {
                 document.getElementById('single-view').classList.remove('hidden'); document.getElementById('multi-view').classList.add('hidden'); document.getElementById('singleNav').classList.remove('hidden');
@@ -282,7 +280,6 @@
                 }
             }
         }
-
         function toggleViewMode() { viewMode = viewMode==='single'?'multi':'single'; document.getElementById('toggleModeBtn').innerText = viewMode==='single'?'📅 6개월 모아보기':'📱 상세 달력 보기'; renderCalendar(); }
         function openTab(id) { document.querySelectorAll('.tab-content, .nav-tab').forEach(el => el.classList.remove('active')); document.getElementById(id).classList.add('active'); document.getElementById('btn-'+id).classList.add('active'); if(id==='calendar') renderCalendar(); else if(id==='schedule') renderSchedule(); else renderStatus(); }
         function toggleFullTable() { isFullTable = !isFullTable; document.getElementById('toggle-full-table').innerText = isFullTable?"전체보기 ON":"전체보기 OFF"; renderStatus(); }
