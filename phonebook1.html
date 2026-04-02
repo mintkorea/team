@@ -6,43 +6,50 @@
     <title>통합 비상연락망</title>
     <style>
         :root {
-            --bg-gray: #f8f9fa; --border-color: #e9ecef; --blue-point: #007aff;
+            --bg-gray: #f1f3f5; --border-color: #dee2e6; --blue-point: #007aff;
             --a-bg: #e8f5e9; --a-text: #2e7d32; --b-bg: #fff8e1; --b-text: #ef6c00;
             --c-bg: #ffebee; --c-text: #c62828; --dorm-bg: #f3e5f5; --dorm-text: #6a1b9a;
         }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, sans-serif; }
-        body { background-color: var(--bg-gray); padding: 5px; font-size: 12px; }
+        body { background-color: var(--bg-gray); padding: 8px; font-size: 14px; }
         
-        /* 탭 메뉴 압축 */
-        .main-tabs { display: flex; gap: 2px; margin-bottom: 5px; }
-        .tab-btn { flex: 1; padding: 8px; text-align: center; background: #ddd; border-radius: 5px; font-weight: bold; cursor: pointer; }
-        .tab-btn.active { background: #fff; color: var(--blue-point); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        /* 메인 탭 */
+        .main-tabs { display: flex; gap: 4px; margin-bottom: 10px; background: #e9ecef; padding: 4px; border-radius: 10px; }
+        .tab-btn { flex: 1; padding: 12px; text-align: center; border-radius: 8px; font-weight: bold; cursor: pointer; color: #495057; }
+        .tab-btn.active { background: #fff; color: var(--blue-point); box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
         .main-container { display: none; }
         .main-container.active { display: block; }
 
-        /* 보안팀 레이아웃 최적화 */
-        .sec-table { width: 100%; background: white; border-radius: 8px; border: 1px solid var(--border-color); border-collapse: collapse; overflow: hidden; }
+        /* 보안팀 레이아웃 - 지휘부 한 줄 복구 및 폰트 확대 */
+        .sec-table { width: 100%; background: white; border-radius: 12px; border: 1px solid var(--border-color); overflow: hidden; }
         .sec-row { border-bottom: 1px solid var(--border-color); display: flex; }
-        .sec-label { width: 40px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 10px; background: #f1f3f5; flex-shrink: 0; text-align: center; }
-        .sec-content { flex-grow: 1; padding: 4px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 3px; }
-        .p-card { background: #fff; border: 1px solid #eee; border-radius: 4px; padding: 4px 1px; text-align: center; cursor: pointer; min-height: 38px; display: flex; flex-direction: column; justify-content: center; }
-        .p-card.boss { border: 1.5px solid var(--blue-point); grid-column: span 2; }
-        .name { font-weight: 800; font-size: 12px; display: block; }
-        .tag { font-size: 8px; color: #777; display: block; transform: scale(0.9); }
+        .sec-label { width: 50px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 12px; background: #f8f9fa; flex-shrink: 0; text-align: center; border-right: 1px solid var(--border-color); }
+        .sec-content { flex-grow: 1; padding: 8px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+        
+        /* 소장/부소장/반장용 2열 배치 */
+        .grid-2 { grid-template-columns: repeat(2, 1fr); }
 
-        /* 미화팀 테이블 최적화 */
-        .sub-tabs { display: flex; gap: 2px; margin: 5px 0; }
-        .sub-tab { flex: 1; padding: 5px; text-align: center; background: #eee; border-radius: 4px; font-size: 11px; cursor: pointer; }
-        .sub-tab.active { background: #555; color: #fff; }
-        table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 5px; overflow: hidden; }
-        th { background: #444; color: #fff; padding: 5px 2px; font-size: 11px; }
-        td { padding: 4px 2px; border-bottom: 1px solid #eee; text-align: center; font-size: 11px; }
-        .tel-btn { color: var(--blue-point); text-decoration: none; font-weight: bold; border: 1px solid var(--blue-point); padding: 1px 4px; border-radius: 3px; }
+        .p-card { background: #fff; border: 1px solid #dee2e6; border-radius: 8px; padding: 8px 2px; text-align: center; cursor: pointer; min-height: 50px; display: flex; flex-direction: column; justify-content: center; transition: 0.1s; }
+        .p-card:active { background: #f1f3f5; transform: scale(0.98); }
+        .p-card.boss { border: 2px solid var(--blue-point); background-color: #f0f7ff; }
+        
+        .name { font-weight: 800; font-size: 16px; color: #212529; }
+        .tag { font-size: 10px; color: #6c757d; margin-bottom: 2px; font-weight: 600; }
 
-        /* 모달 */
-        #modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 10; justify-content: center; align-items: center; }
-        .m-box { background: #fff; width: 85%; max-width: 300px; padding: 20px; border-radius: 15px; text-align: center; }
-        .call-link { display: block; background: #28a745; color: #fff; padding: 12px; margin-top: 15px; border-radius: 10px; text-decoration: none; font-weight: bold; }
+        /* 미화팀 테이블 여백 증대 */
+        .sub-tabs { display: flex; gap: 4px; margin: 10px 0; }
+        .sub-tab { flex: 1; padding: 10px; text-align: center; background: #dee2e6; border-radius: 6px; font-size: 13px; font-weight: bold; color: #495057; }
+        .sub-tab.active { background: #343a40; color: #fff; }
+        
+        table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        th { background: #495057; color: #fff; padding: 10px 4px; font-size: 13px; }
+        td { padding: 10px 4px; border-bottom: 1px solid #f1f3f5; text-align: center; font-size: 13px; font-weight: 500; }
+        .tel-btn { color: var(--blue-point); text-decoration: none; font-weight: 800; border: 1.5px solid var(--blue-point); padding: 4px 8px; border-radius: 6px; font-size: 12px; display: inline-block; }
+
+        /* 모달 디자인 */
+        #modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 100; justify-content: center; align-items: center; }
+        .m-box { background: #fff; width: 85%; max-width: 320px; padding: 25px; border-radius: 20px; text-align: center; }
+        .call-link { display: block; background: #28a745; color: #fff; padding: 15px; margin-top: 20px; border-radius: 12px; text-decoration: none; font-size: 18px; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -56,14 +63,14 @@
     <div class="sec-table">
         <div class="sec-row">
             <div class="sec-label">지휘부</div>
-            <div class="sec-content" style="grid-template-columns: repeat(2, 1fr);">
+            <div class="sec-content grid-2">
                 <div class="p-card boss" onclick="openM('이규용','보안소장','010-8883-6580','1972.03.01','-')"><span class="tag">보안소장</span><span class="name">이규용</span></div>
                 <div class="p-card boss" onclick="openM('박상현','부소장','010-3193-4603','1988.07.31','-')"><span class="tag">부소장</span><span class="name">박상현</span></div>
             </div>
         </div>
         <div class="sec-row">
             <div class="sec-label">반장</div>
-            <div class="sec-content" style="grid-template-columns: repeat(2, 1fr);">
+            <div class="sec-content grid-2">
                 <div class="p-card" onclick="openM('유정수','보안반장','010-5316-8065','1970.09.25','2020.09.01')"><span class="tag">성의/의산연</span><span class="name">유정수</span></div>
                 <div class="p-card" onclick="openM('오제준','보안반장','010-3352-8933','1970.03.29','2022.05.18')"><span class="tag">옴니버스</span><span class="name">오제준</span></div>
             </div>
@@ -106,10 +113,10 @@
         </div>
         <div class="sec-row">
             <div class="sec-label" style="background:var(--dorm-bg); color:var(--dorm-text)">기숙사</div>
-            <div class="sec-content" style="grid-template-columns: repeat(3, 1fr);">
-                <div class="p-card" style="background:var(--dorm-bg)" onclick="openM('이강택','반장','010-9048-6708','1965.08.13','23.08.03')"><span class="tag">반장</span><span class="name">이강택</span></div>
-                <div class="p-card" style="background:var(--dorm-bg)" onclick="openM('유시균','조원','010-8737-5770','1962.02.21','08.10.15')"><span class="tag">조원</span><span class="name">유시균</span></div>
-                <div class="p-card" style="background:var(--dorm-bg)" onclick="openM('이상헌','조원','010-4285-4231','1965.10.09','22.04.01')"><span class="tag">조원</span><span class="name">이상헌</span></div>
+            <div class="sec-content grid-2" style="grid-template-columns: repeat(3, 1fr);">
+                <div class="p-card" style="background:var(--dorm-bg)" onclick="openM('이강택','반장','010-9048-6708','1965.08.13','23.08.03')"><span class="tag">반장</span><span class="name" style="font-size:14px">이강택</span></div>
+                <div class="p-card" style="background:var(--dorm-bg)" onclick="openM('유시균','조원','010-8737-5770','1962.02.21','08.10.15')"><span class="tag">조원</span><span class="name" style="font-size:14px">유시균</span></div>
+                <div class="p-card" style="background:var(--dorm-bg)" onclick="openM('이상헌','조원','010-4285-4231','1965.10.09','22.04.01')"><span class="tag">조원</span><span class="name" style="font-size:14px">이상헌</span></div>
             </div>
         </div>
     </div>
@@ -120,7 +127,7 @@
         <div class="sub-tab active" onclick="showSub('sh')">🏢 성의회관</div>
         <div class="sub-tab" onclick="showSub('is')">🔬 의산연/별관</div>
     </div>
-    <div id="sh-table" class="sub-content">
+    <div id="sh-table">
         <table>
             <tr><th>위치</th><th>성명</th><th>연락처</th><th>비고</th></tr>
             <tr><td>14층</td><td>유순복</td><td><a href="tel:01063700845" class="tel-btn">010-6370</a></td><td>B(1)</td></tr>
@@ -148,7 +155,7 @@
             <tr style="background:#fff9db"><td>반장</td><td>허영찬</td><td><a href="tel:01098943415" class="tel-btn">010-9894</a></td><td>지원</td></tr>
         </table>
     </div>
-    <div id="is-table" class="sub-content" style="display:none">
+    <div id="is-table" style="display:none">
         <table>
             <tr><th>위치</th><th>성명</th><th>연락처</th><th>비고</th></tr>
             <tr><td>8층</td><td>안순재</td><td><a href="tel:01091198879" class="tel-btn">010-9119</a></td><td>A조</td></tr>
@@ -176,14 +183,14 @@
 
 <div id="modal" onclick="this.style.display='none'">
     <div class="m-box" onclick="event.stopPropagation()">
-        <h2 id="m-n">이름</h2>
-        <p id="m-p" style="color:var(--blue-point); margin-bottom:10px">직책</p>
-        <div style="text-align:left; font-size:13px; line-height:1.8; background:#f8f9fa; padding:10px; border-radius:8px;">
-            🎂 생일: <span id="m-b"></span><br>
-            📅 입사: <span id="m-e"></span><br>
-            📞 번호: <span id="m-t"></span>
+        <h2 id="m-n" style="font-size:28px">이름</h2>
+        <p id="m-p" style="color:var(--blue-point); margin-bottom:15px; font-weight:bold">직책</p>
+        <div style="text-align:left; font-size:15px; line-height:2; background:#f8f9fa; padding:15px; border-radius:12px; border:1px solid #eee">
+            🎂 생년월일: <span id="m-b" style="font-weight:bold"></span><br>
+            📅 입사일자: <span id="m-e" style="font-weight:bold"></span><br>
+            📞 전 화: <span id="m-t" style="font-weight:bold; color:var(--blue-point)"></span>
         </div>
-        <a id="m-l" href="" class="call-link">📞 전화 걸기</a>
+        <a id="m-l" href="" class="call-link">📞 바로 전화걸기</a>
     </div>
 </div>
 
@@ -191,14 +198,14 @@
     function showTab(id) {
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         document.querySelectorAll('.main-container').forEach(c => c.classList.remove('active'));
-        event.target.classList.add('active');
+        event.currentTarget.classList.add('active');
         document.getElementById(id + '-container').classList.add('active');
     }
     function showSub(id) {
         document.querySelectorAll('.sub-tab').forEach(b => b.classList.remove('active'));
         document.getElementById('sh-table').style.display = id==='sh' ? 'block' : 'none';
         document.getElementById('is-table').style.display = id==='is' ? 'block' : 'none';
-        event.target.classList.add('active');
+        event.currentTarget.classList.add('active');
     }
     function openM(n, p, t, b, e) {
         document.getElementById('m-n').innerText = n;
