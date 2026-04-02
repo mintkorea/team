@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>C조 통합 근무 시스템 v5.5</title>
+    <title>C조 통합 근무 시스템 v5.6</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap');
@@ -44,7 +44,7 @@
     </style>
 </head>
 <body>
-    <div id="main-wrapper" class="max-w-md mx-auto bg-white min-h-screen shadow-lg flex flex-col relative transition-all duration-500">
+    <div id="main-wrapper" class="max-w-md mx-auto bg-white min-h-screen shadow-lg flex flex-col relative">
         <div class="bg-[#2E4077] p-6 text-center text-white relative">
             <h1 class="text-xl font-black flex items-center justify-center gap-2">
                 <span id="headIcon">🛡️</span> <span id="headTitle">C조 통합 근무 시스템</span>
@@ -116,40 +116,13 @@
                 <div id="multi-view" class="hidden grid grid-cols-1 gap-6"></div>
             </div>
             <div class="flex justify-center mt-6 mb-10">
-                <button onclick="toggleViewMode()" id="toggleModeBtn" class="bg-[#2E4077] text-white px-8 py-4 rounded-full font-black text-sm shadow-xl active:scale-95 transition-all">📅 6개월 모아보기 (3X2)</button>
+                <button onclick="toggleViewMode()" id="toggleModeBtn" class="bg-[#2E4077] text-white px-8 py-4 rounded-full font-black text-sm shadow-xl">📅 6개월 모아보기 (3X2)</button>
             </div>
         </div>
     </div>
 
-    <div id="authModal" class="modal-overlay">
-        <div class="bg-white p-6 rounded-3xl w-full max-w-xs text-center shadow-2xl">
-            <h3 class="text-lg font-black mb-4">관리자 인증</h3>
-            <input type="password" id="authPw" class="admin-input text-center tracking-widest" placeholder="••••">
-            <div class="flex gap-2">
-                <button onclick="closeModal('authModal')" class="flex-1 py-3 bg-slate-100 rounded-xl font-bold">취소</button>
-                <button onclick="checkAuth()" class="flex-1 py-3 bg-[#2E4077] text-white rounded-xl font-bold">확인</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="adminModal" class="modal-overlay">
-        <div class="bg-white p-6 rounded-3xl w-full max-w-sm max-h-[85vh] overflow-y-auto shadow-2xl">
-            <h3 class="text-lg font-black mb-4 text-center">시스템 환경 설정</h3>
-            <div class="space-y-4">
-                <div><label class="text-[10px] font-bold text-slate-400 ml-1">앱 타이틀</label>
-                <input type="text" id="appTitleIn" class="admin-input" placeholder="앱 이름"></div>
-                <div><label class="text-[10px] font-bold text-slate-400 ml-1">패턴 기준 날짜 (C조 첫 근무일)</label>
-                <input type="date" id="baseDateIn" class="admin-input"></div>
-                <div id="pattern-settings" class="space-y-2 pt-2 border-t">
-                    <label class="text-[10px] font-bold text-slate-400 ml-1">조별 색상 설정 (배경/강조)</label>
-                </div>
-            </div>
-            <div class="flex gap-2 mt-6">
-                <button onclick="closeModal('adminModal')" class="flex-1 py-3 bg-slate-100 rounded-xl font-bold">닫기</button>
-                <button onclick="saveAdminSettings()" class="flex-1 py-3 bg-blue-600 text-white rounded-xl font-bold">설정 저장</button>
-            </div>
-        </div>
-    </div>
+    <div id="authModal" class="modal-overlay"><div class="bg-white p-6 rounded-3xl w-full max-w-xs text-center"><h3 class="text-lg font-black mb-4">관리자 인증</h3><input type="password" id="authPw" class="admin-input text-center tracking-widest" placeholder="••••"><div class="flex gap-2"><button onclick="closeModal('authModal')" class="flex-1 py-3 bg-slate-100 rounded-xl font-bold">취소</button><button onclick="checkAuth()" class="flex-1 py-3 bg-[#2E4077] text-white rounded-xl font-bold">확인</button></div></div></div>
+    <div id="adminModal" class="modal-overlay"><div class="bg-white p-6 rounded-3xl w-full max-w-sm max-h-[85vh] overflow-y-auto"><h3 class="text-lg font-black mb-4 text-center">시스템 설정</h3><div class="space-y-4"><div><label class="text-[10px] font-bold text-slate-400 ml-1">앱 타이틀</label><input type="text" id="appTitleIn" class="admin-input"></div><div><label class="text-[10px] font-bold text-slate-400 ml-1">패턴 기준 날짜 (C조 순환 시작일)</label><input type="date" id="baseDateIn" class="admin-input"></div><div id="pattern-settings" class="space-y-2 pt-2 border-t"></div></div><div class="flex gap-2 mt-6"><button onclick="closeModal('adminModal')" class="flex-1 py-3 bg-slate-100 rounded-xl font-bold">닫기</button><button onclick="saveAdminSettings()" class="flex-1 py-3 bg-blue-600 text-white rounded-xl font-bold">저장</button></div></div></div>
 
     <script>
         const DEFAULT_CONFIG = {
@@ -166,69 +139,68 @@
         const DATA_LIST = [["07:00", "08:00", "보안실", "로비", "로비", "휴게"], ["08:00", "09:00", "보안실", "휴게", "휴게", "로비"], ["09:00", "10:00", "보안실", "순찰", "휴게", "로비"], ["10:00", "11:00", "휴게", "보안실", "로비", "휴게"], ["11:00", "12:00", "보안실", "중식", "로비", "중식"], ["12:00", "13:00", "중식", "보안실", "중식", "로비"], ["13:00", "14:00", "보안실", "휴게", "순찰", "로비"], ["14:00", "15:00", "순찰", "보안실", "로비", "휴게"], ["15:00", "16:00", "보안실", "휴게", "로비", "휴게"], ["16:00", "17:00", "휴게", "보안실", "휴게", "로비"], ["17:00", "18:00", "보안실", "휴게", "휴게", "로비"], ["18:00", "19:00", "보안실", "석식", "로비", "석식"], ["19:00", "20:00", "보안실", "보안실", "석식", "로비"], ["20:00", "21:00", "석식", "보안실", "로비", "휴게"], ["21:00", "22:00", "보안실", "순찰", "로비", "휴게"], ["22:00", "23:00", "순찰", "보안실", "순찰", "로비"], ["23:00", "00:00", "보안실", "휴게", "휴게", "로비"], ["00:00", "01:00", "보안실", "휴게", "휴게", "로비"], ["01:00", "01:40", "보안실", "휴게", "휴게", "로비"], ["01:40", "02:00", "보안실", "보안실", "로비", "로비"], ["02:00", "03:00", "휴게", "보안실", "로비", "휴게"], ["03:00", "04:00", "휴게", "보안실", "로비", "휴게"], ["04:00", "05:00", "휴게", "보안실", "로비", "휴게"], ["05:00", "06:00", "보안실", "순찰", "로비", "순찰"], ["06:00", "07:00", "보안실", "정리", "로비", "정리"]];
 
         /**
-         * 핵심 근무 정보 계산 함수: 당직 다음 날 오전까지 근무 연속성 보장
+         * [v5.6 핵심] 근무 정보 계산 (7시 교대 및 18일 주기)
          */
         function getDutyInfo(targetDt, baseDateStr) {
-            const targetDate = new Date(targetDt.getFullYear(), targetDt.getMonth(), targetDt.getDate());
-            const baseDate = new Date(baseDateStr);
+            const bParts = baseDateStr.split('-').map(Number);
+            const baseDate = new Date(bParts[0], bParts[1] - 1, bParts[2]);
             baseDate.setHours(0,0,0,0);
             
-            const diffDays = Math.round((targetDate - baseDate) / 86400000);
-            const shiftCycle = 3;
-            const dayIndex = ((diffDays % shiftCycle) + shiftCycle) % shiftCycle;
+            const targetDate = new Date(targetDt.getFullYear(), targetDt.getMonth(), targetDt.getDate());
             const hr = targetDt.getHours();
+            const diffDays = Math.round((targetDate - baseDate) / 86400000);
             
-            let status = "";
-            let msg = "";
-            let nextDuty = null;
-            let isWorkingNow = false;
+            let effectiveDiff = diffDays;
+            let isExtended = false;
 
-            if (dayIndex === 0) {
-                // 오늘이 당직 순번인 경우
-                status = "ON_DUTY";
-                msg = hr < 7 ? "곧 근무 투입 시간입니다." : "🛡️ 현재 C조 근무 시간입니다.";
-                nextDuty = new Date(targetDate);
-                nextDuty.setDate(targetDate.getDate() + 3);
-                isWorkingNow = true;
-            } else if (dayIndex === 1) {
-                // 당직 다음 날 (비번1)
-                nextDuty = new Date(targetDate);
-                nextDuty.setDate(targetDate.getDate() + 2);
-                if (hr < 9) {
-                    status = "EXTENDED_DUTY";
-                    msg = "수고하셨습니다. 교대 전 마무리 근무 중입니다.";
-                    isWorkingNow = true; // 오전 9시 전까지는 전날 근무의 연속으로 간주
-                } else {
-                    status = "OFF_1";
-                    msg = "😴 오늘은 휴무일(비번)입니다. 편안한 휴식 되세요.";
-                    isWorkingNow = false;
-                }
-            } else {
-                // 비번 2
-                status = "OFF_2";
-                msg = "🗓️ 내일은 근무일입니다. 즐거운 하루 되세요.";
-                nextDuty = new Date(targetDate);
-                nextDuty.setDate(targetDate.getDate() + 1);
-                isWorkingNow = false;
+            // 오전 7시 이전은 전일 근무의 연장선
+            if (hr < 7) {
+                effectiveDiff = diffDays - 1;
+                isExtended = true;
             }
 
-            return { status, message: msg, nextDutyDate: nextDuty, isWorkingNow, dayIndex };
+            const dayIndex = ((effectiveDiff % 3) + 3) % 3;
+            const patternIndex = ((Math.floor(effectiveDiff / 3) % 6) + 6) % 6;
+
+            let status = "", msg = "", isWorkingNow = false;
+
+            if (dayIndex === 0) {
+                isWorkingNow = true;
+                status = isExtended ? "EXTENDED_DUTY" : "ON_DUTY";
+                msg = isExtended ? "수고하셨습니다. 교대 전 마무리 근무 중입니다." : "🛡️ 현재 C조 근무 시간입니다.";
+            } else if (dayIndex === 1) {
+                status = "OFF_1"; msg = "😴 오늘은 휴무일(비번)입니다.";
+            } else {
+                status = "OFF_2"; msg = "🗓️ 내일은 근무일입니다.";
+            }
+
+            // 다음 근무일 계산
+            let nextDutyDate = new Date(targetDate);
+            let daysUntilNext = (3 - dayIndex) % 3;
+            if (dayIndex === 0 && hr >= 7) daysUntilNext = 3;
+            if (isExtended && dayIndex === 0) daysUntilNext = 0;
+            nextDutyDate.setDate(targetDate.getDate() + daysUntilNext);
+
+            return { status, message: msg, nextDutyDate, isWorkingNow, dayIndex, patternIndex, 
+                     effectiveDate: new Date(targetDate.getTime() + (isExtended ? -86400000 : 0)) };
         }
 
-        // 기존 getShift 호환용
         function getShift(d) {
             const info = getDutyInfo(d, config.baseDate);
             return config.patterns[info.dayIndex];
         }
 
-        // 기존 getWorkers 호환용 (C조 기준 명단 순환)
         function getWorkers(d) {
-            const targetDate = new Date(d.getFullYear(), d.getMonth(), d.getDate());
-            const base = new Date(config.baseDate);
-            const diffDays = Math.round((targetDate - base) / 86400000);
-            if (((diffDays % 3) + 3) % 3 !== 0) return null;
-            const ps = [["황재업", "김태언", "이태원", "이정석"], ["황재업", "김태언", "이정석", "이태원"], ["황재업", "이정석", "김태언", "이태원"], ["황재업", "이정석", "이태원", "김태언"], ["황재업", "이태원", "김태언", "이정석"], ["황재업", "이태원", "이정석", "김태언"]];
-            return ps[((Math.floor(diffDays / 3) % 6) + 6) % 6];
+            const info = getDutyInfo(d, config.baseDate);
+            // 해당 논리 날짜가 C조가 아니면 명단 없음
+            if (info.dayIndex !== 0) return null;
+
+            const ps = [
+                ["황재업", "김태언", "이태원", "이정석"], ["황재업", "김태언", "이정석", "이태원"],
+                ["황재업", "이정석", "김태언", "이태원"], ["황재업", "이정석", "이태원", "김태언"],
+                ["황재업", "이태원", "김태언", "이정석"], ["황재업", "이태원", "이정석", "김태언"]
+            ];
+            return ps[info.patternIndex];
         }
 
         function renderStatus() {
@@ -236,11 +208,13 @@
             const info = getDutyInfo(now, config.baseDate);
             const hr = now.getHours(), min = now.getMinutes(), totalMin = hr * 60 + min;
 
-            // 메시지 표시 (비번일 때 크게 표시)
-            const isBig = info.status.startsWith("OFF");
+            const isBig = !info.isWorkingNow;
             document.getElementById('time-msg').innerHTML = `<div class="${isBig ? 'big-msg-box' : 'bg-blue-50 text-[#2E4077] p-4 rounded-2xl text-center font-bold text-[14px] border border-blue-100 shadow-sm mb-4'}">${info.message}</div>`;
 
             const cardArea = document.getElementById('worker-cards');
+            const nextD = info.nextDutyDate;
+            document.getElementById('next-duty-notice').innerText = `다음 근무 예정일: ${nextD.getMonth()+1}월 ${nextD.getDate()}일`;
+
             if (info.isWorkingNow) {
                 cardArea.classList.remove('hidden');
                 let curIdx = -1;
@@ -250,19 +224,12 @@
                     if(eT <= sT) eT += 1440; if(nT < 420) nT += 1440;
                     if(nT >= sT && nT < eT) curIdx = i;
                 });
-                
-                // 만약 오전 9시 전 연속 근무 중이면 전날 날짜를 기준으로 명단 조회
-                const workerDate = (info.status === "EXTENDED_DUTY") ? new Date(now.getTime() - 86400000) : now;
-                const currentWs = getWorkers(workerDate) || ["-","-","-","-"];
+                const currentWs = getWorkers(info.effectiveDate) || ["-","-","-","-"];
                 const curPos = (curIdx !== -1) ? DATA_LIST[curIdx] : ["-","-","휴게","휴게","휴게","휴게"];
                 cardArea.innerHTML = currentWs.map((w, idx) => `<div class="worker-card" style="border-left: 4px solid ${WORKER_COLS[w] || '#ccc'}"><div class="worker-name">${['조장','성희','의산A','의산B'][idx]} ${w}</div><div class="worker-pos">${curPos[idx+2]}</div></div>`).join('');
-            } else {
-                cardArea.classList.add('hidden');
-            }
+            } else { cardArea.classList.add('hidden'); }
 
-            document.getElementById('next-duty-notice').innerText = `다음 근무는 ${info.nextDutyDate.getMonth()+1}월 ${info.nextDutyDate.getDate()}일 입니다.`;
-
-            const tableWs = (info.status === "EXTENDED_DUTY") ? (getWorkers(new Date(now.getTime() - 86400000)) || ["-","-","-","-"]) : (getWorkers(now) || ["-","-","-","-"]);
+            const tableWs = getWorkers(info.effectiveDate) || getWorkers(nextD) || ["-","-","-","-"];
             let h = `<thead><tr><th rowspan="2" class="time-cell">시간</th><th colspan="2">성의회관</th><th colspan="2">의생명산업연구원</th></tr><tr><th>${tableWs[0]}</th><th>${tableWs[1]}</th><th>${tableWs[2]}</th><th>${tableWs[3]}</th></tr></thead><tbody>`;
             
             let curViewIdx = -1;
@@ -287,7 +254,8 @@
             document.getElementById('slider-label').innerText = `조회 범위: ${val>=0?'+':''}${val}개월`;
             let h = `<thead><tr><th style="width:80px">날짜</th><th>조장</th><th>성희</th><th>의산A</th><th>의산B</th></tr></thead><tbody>`;
             for (let i = (val>=0?0:val*30); i < (val>=0?val*30+31:1); i++) {
-                let d = new Date(); d.setDate(d.getDate() + i); const ws = getWorkers(d);
+                let d = new Date(); d.setDate(d.getDate() + i); 
+                const ws = getWorkers(d);
                 if (ws) {
                     const di = d.getDay(), dc = di===0?'sunday':di===6?'saturday':'';
                     h += `<tr><td class="${dc} font-black bg-slate-50">${d.getMonth()+1}/${d.getDate()}(${['일','월','화','수','목','금','토'][di]})</td>`;
@@ -303,7 +271,7 @@
             const first = new Date(year, month, 1).getDay(), last = new Date(year, month+1, 0).getDate(), today = new Date().toDateString();
             for(let i=0; i<first; i++) container.innerHTML += `<div class="calendar-cell bg-slate-50/50"></div>`;
             for(let d=1; d<=last; d++) {
-                const dt = new Date(year, month, d), shift = getShift(dt), isT = (target === shift.name);
+                const dt = new Date(year, month, d), info = getDutyInfo(dt, config.baseDate), shift = config.patterns[info.dayIndex], isT = (target === shift.name);
                 const cell = document.createElement('div'); cell.className = `calendar-cell ${dt.toDateString()===today?'is-today':''}`;
                 cell.style.backgroundColor = isT ? shift.highlight : 'transparent';
                 const dc = isT?'text-white':(dt.getDay()===0?'sunday':dt.getDay()===6?'saturday':'');
@@ -347,7 +315,7 @@
             document.getElementById('appTitleIn').value = config.appTitle;
             document.getElementById('baseDateIn').value = config.baseDate;
             const pArea = document.getElementById('pattern-settings');
-            pArea.innerHTML = '<label class="text-[10px] font-bold text-slate-400 ml-1">조별 색상 설정 (배경/강조)</label>';
+            pArea.innerHTML = '<label class="text-[10px] font-bold text-slate-400 ml-1">조별 색상 설정</label>';
             config.patterns.forEach((p, i) => {
                 pArea.innerHTML += `<div class="flex items-center gap-2 bg-slate-50 p-2 rounded-lg border"><span class="w-8 font-black text-xs text-slate-500">${p.name}조</span><input type="color" id="p-bg-${i}" value="${p.color}" class="w-10 h-6 border-0"><input type="color" id="p-hi-${i}" value="${p.highlight}" class="w-10 h-6 border-0"></div>`;
             });
