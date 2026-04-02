@@ -6,284 +6,209 @@
     <title>통합 비상연락망</title>
     <style>
         :root {
-            --bg-gray: #f8f9fa;
-            --border-color: #e9ecef;
-            --blue-point: #007aff;
-            --navy-bg: #1a2a44;
-            --green-bg: #2d5a27;
-            --a-bg: #e8f5e9; --a-label: #c8e6c9; --a-text: #2e7d32;
-            --b-bg: #fff8e1; --b-label: #ffecb3; --b-text: #ef6c00;
-            --c-bg: #ffebee; --c-label: #ffcdd2; --c-text: #c62828;
-            --dorm-bg: #f3e5f5; --dorm-label: #e1bee7; --dorm-text: #6a1b9a;
+            --bg-gray: #f8f9fa; --border-color: #e9ecef; --blue-point: #007aff;
+            --a-bg: #e8f5e9; --a-text: #2e7d32; --b-bg: #fff8e1; --b-text: #ef6c00;
+            --c-bg: #ffebee; --c-text: #c62828; --dorm-bg: #f3e5f5; --dorm-text: #6a1b9a;
         }
-
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { background-color: var(--bg-gray); padding: 5px; display: flex; flex-direction: column; align-items: center; }
-
-        /* 상단 메인 탭 - 높이 축소 */
-        .main-tabs { display: flex; width: 100%; max-width: 500px; margin-bottom: 8px; background: #e9ecef; border-radius: 8px; padding: 2px; }
-        .main-tab-item { flex: 1; text-align: center; padding: 10px; font-weight: bold; cursor: pointer; border-radius: 6px; font-size: 14px; color: #6c757d; }
-        .main-tab-item.active { background: white; color: var(--blue-point); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-
-        .main-container { width: 100%; max-width: 500px; display: none; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, sans-serif; }
+        body { background-color: var(--bg-gray); padding: 5px; font-size: 12px; }
+        
+        /* 탭 메뉴 압축 */
+        .main-tabs { display: flex; gap: 2px; margin-bottom: 5px; }
+        .tab-btn { flex: 1; padding: 8px; text-align: center; background: #ddd; border-radius: 5px; font-weight: bold; cursor: pointer; }
+        .tab-btn.active { background: #fff; color: var(--blue-point); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .main-container { display: none; }
         .main-container.active { display: block; }
 
-        /* 보안팀 카드 스타일 - 여백 및 크기 압축 */
-        .table-container { background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.06); overflow: hidden; border: 1px solid var(--border-color); margin-bottom: 8px; }
-        .row { display: flex; border-bottom: 1px solid var(--border-color); }
-        .row:last-child { border-bottom: none; }
-        .side-label { width: 45px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 11px; flex-shrink: 0; text-align: center; padding: 5px 2px; line-height: 1.2; }
-        .content-area { flex-grow: 1; padding: 6px; }
-        .grid-box { display: grid; grid-template-columns: repeat(2, 1fr); gap: 4px; }
-        .quad-grid { grid-template-columns: repeat(4, 1fr); gap: 3px; }
-        
-        .person-card { 
-            background: white; border: 1px solid var(--border-color); border-radius: 6px; 
-            padding: 5px 1px; display: flex; flex-direction: column; align-items: center; justify-content: center;
-            cursor: pointer; text-decoration: none; color: inherit; min-height: 42px;
-        }
-        .boss-card { border: 1.5px solid var(--blue-point); background-color: #f0f7ff; }
-        .card-a { background-color: var(--a-bg); } .card-b { background-color: var(--b-bg); }
-        .card-c { background-color: var(--c-bg); } .card-dorm { background-color: var(--dorm-bg); }
-        .empty-card { border: 1px dashed #ccc; background: rgba(255,255,255,0.3); pointer-events: none; }
-        
-        .pos-tag { font-size: 8px; color: #777; margin-bottom: 1px; font-weight: 600; transform: scale(0.9); }
-        .name-text { font-size: 13px; font-weight: 800; letter-spacing: -0.5px; }
-        .name-small { font-size: 12px; }
+        /* 보안팀 레이아웃 최적화 */
+        .sec-table { width: 100%; background: white; border-radius: 8px; border: 1px solid var(--border-color); border-collapse: collapse; overflow: hidden; }
+        .sec-row { border-bottom: 1px solid var(--border-color); display: flex; }
+        .sec-label { width: 40px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 10px; background: #f1f3f5; flex-shrink: 0; text-align: center; }
+        .sec-content { flex-grow: 1; padding: 4px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 3px; }
+        .p-card { background: #fff; border: 1px solid #eee; border-radius: 4px; padding: 4px 1px; text-align: center; cursor: pointer; min-height: 38px; display: flex; flex-direction: column; justify-content: center; }
+        .p-card.boss { border: 1.5px solid var(--blue-point); grid-column: span 2; }
+        .name { font-weight: 800; font-size: 12px; display: block; }
+        .tag { font-size: 8px; color: #777; display: block; transform: scale(0.9); }
 
-        /* 미화팀 테이블 스타일 - 여백 최소화 */
-        .sub-tabs { display: flex; background: #dfe3e6; border-radius: 8px; padding: 2px; margin-bottom: 8px; }
-        .sub-tab-item { flex: 1; text-align: center; padding: 6px; font-size: 12px; font-weight: 800; cursor: pointer; border-radius: 6px; color: #777; }
-        .sub-tab-item.active { background: white; color: #333; }
-        
-        .clean-container { display: none; }
-        .clean-container.active { display: block; }
-        .card { background: white; border-radius: 10px; overflow: hidden; border: 1px solid #e1e4e8; }
-        .header { padding: 8px; color: white; font-weight: 800; text-align: center; font-size: 14px; }
-        .sh-bg { background: var(--navy-bg); }
-        .is-bg { background: var(--green-bg); }
-        
-        table { width: 100%; border-collapse: collapse; font-size: 12px; }
-        th { background: #f8f9fa; padding: 6px 2px; border-bottom: 1px solid #dee2e6; color: #444; font-size: 11px; }
-        td { padding: 6px 2px; border-bottom: 1px solid #eee; text-align: center; color: #333; }
-        .sub-header { background: #f1f3f5; font-weight: 800; color: #555; font-size: 11px; }
-        
-        .tel-link {
-            display: inline-block; padding: 3px 5px; background: #fff; border: 1px solid #007aff;
-            color: #007aff; text-decoration: none; border-radius: 4px; font-weight: 800; font-size: 11px;
-        }
-        .is-tel { border-color: var(--green-bg); color: var(--green-bg); }
-        .highlight { background-color: #fff9db; font-weight: 800; }
+        /* 미화팀 테이블 최적화 */
+        .sub-tabs { display: flex; gap: 2px; margin: 5px 0; }
+        .sub-tab { flex: 1; padding: 5px; text-align: center; background: #eee; border-radius: 4px; font-size: 11px; cursor: pointer; }
+        .sub-tab.active { background: #555; color: #fff; }
+        table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 5px; overflow: hidden; }
+        th { background: #444; color: #fff; padding: 5px 2px; font-size: 11px; }
+        td { padding: 4px 2px; border-bottom: 1px solid #eee; text-align: center; font-size: 11px; }
+        .tel-btn { color: var(--blue-point); text-decoration: none; font-weight: bold; border: 1px solid var(--blue-point); padding: 1px 4px; border-radius: 3px; }
 
-        /* 모달 스타일 */
-        #modal {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.7); z-index: 10000; justify-content: center; align-items: center; padding: 20px;
-        }
-        .modal-content {
-            background: white; width: 90%; max-width: 280px; padding: 20px;
-            border-radius: 20px; text-align: center; position: relative;
-        }
-        .m-name { font-size: 24px; font-weight: 900; margin-bottom: 2px; }
-        .m-pos { font-size: 14px; color: var(--blue-point); font-weight: 700; margin-bottom: 15px; }
-        .m-info-box { background: #f8f9fa; border-radius: 10px; padding: 12px; margin-bottom: 15px; text-align: left; }
-        .m-line { font-size: 13px; color: #555; margin-bottom: 6px; display: flex; justify-content: space-between; }
-        .btn-call { display: block; background: #28a745; color: white; padding: 12px; border-radius: 12px; text-decoration: none; font-size: 16px; font-weight: bold; }
-        .btn-close { margin-top: 15px; color: #bbb; cursor: pointer; font-size: 13px; }
-        
-        .footer-info { font-size: 10px; color: #aaa; text-align: center; margin-top: 15px; line-height: 1.4; padding-bottom: 20px; }
+        /* 모달 */
+        #modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 10; justify-content: center; align-items: center; }
+        .m-box { background: #fff; width: 85%; max-width: 300px; padding: 20px; border-radius: 15px; text-align: center; }
+        .call-link { display: block; background: #28a745; color: #fff; padding: 12px; margin-top: 15px; border-radius: 10px; text-decoration: none; font-weight: bold; }
     </style>
 </head>
 <body>
 
 <div class="main-tabs">
-    <div id="tab-sec" class="main-tab-item active" onclick="switchMainTab('sec')">🛡️ 보안팀</div>
-    <div id="tab-clean" class="main-tab-item" onclick="switchMainTab('clean')">🧹 미화팀</div>
+    <div class="tab-btn active" onclick="showTab('sec')">🛡️ 보안팀</div>
+    <div class="tab-btn" onclick="showTab('clean')">🧹 미화팀</div>
 </div>
 
 <div id="sec-container" class="main-container active">
-    <div class="table-container">
-        <div class="row">
-            <div class="side-label" style="background:#eceff1; color:#263238;">지휘부</div>
-            <div class="content-area"><div class="grid-box">
-                <div class="person-card boss-card" onclick="openModal('이규용','보안소장','010-8883-6580','1972.03.01','-')"><span class="pos-tag" style="color:var(--blue-point)">보안소장</span><span class="name-text">이규용</span></div>
-                <div class="person-card boss-card" onclick="openModal('박상현','보안부소장','010-3193-4603','1988.07.31','-')"><span class="pos-tag" style="color:var(--blue-point)">부소장</span><span class="name-text">박상현</span></div>
-            </div></div>
+    <div class="sec-table">
+        <div class="sec-row">
+            <div class="sec-label">지휘부</div>
+            <div class="sec-content" style="grid-template-columns: repeat(2, 1fr);">
+                <div class="p-card boss" onclick="openM('이규용','보안소장','010-8883-6580','1972.03.01','-')"><span class="tag">보안소장</span><span class="name">이규용</span></div>
+                <div class="p-card boss" onclick="openM('박상현','부소장','010-3193-4603','1988.07.31','-')"><span class="tag">부소장</span><span class="name">박상현</span></div>
+            </div>
         </div>
-        <div class="row">
-            <div class="side-label" style="background:#f1f3f4; color:#455a64;">반장</div>
-            <div class="content-area"><div class="grid-box">
-                <div class="person-card" onclick="openModal('유정수','보안반장 (성의/의산연)','010-5316-8065','1970.09.25','2020.09.01')"><span class="pos-tag">보안반장</span><span class="name-text">유정수</span></div>
-                <div class="person-card" onclick="openModal('오제준','보안반장 (옴니버스)','010-3352-8933','1970.03.29','2022.05.18')"><span class="pos-tag">보안반장</span><span class="name-text">오제준</span></div>
-            </div></div>
+        <div class="sec-row">
+            <div class="sec-label">반장</div>
+            <div class="sec-content" style="grid-template-columns: repeat(2, 1fr);">
+                <div class="p-card" onclick="openM('유정수','보안반장','010-5316-8065','1970.09.25','2020.09.01')"><span class="tag">성의/의산연</span><span class="name">유정수</span></div>
+                <div class="p-card" onclick="openM('오제준','보안반장','010-3352-8933','1970.03.29','2022.05.18')"><span class="tag">옴니버스</span><span class="name">오제준</span></div>
+            </div>
         </div>
-        <div class="row">
-            <div class="side-label" style="background:var(--a-label); color:var(--a-text)">A조</div>
-            <div class="content-area"><div class="grid-box quad-grid">
-                <div class="person-card card-a" onclick="openModal('배준용','A조 보안조장','010-4717-7065','1969.12.24','2022.07.26')"><span class="pos-tag">성의회관</span><span class="name-text name-small">배준용</span></div>
-                <div class="person-card card-a" onclick="openModal('이명구','A조 보안조원','010-8638-5819','1964.09.15','2025.03.21')"><span class="pos-tag">성의회관</span><span class="name-text name-small">이명구</span></div>
-                <div class="person-card card-a" onclick="openModal('손병휘','A조 옴니조장','010-9966-2090','1972.05.23','2016.05.05')"><span class="pos-tag">옴니조장</span><span class="name-text name-small">손병휘</span></div>
-                <div class="person-card card-a" onclick="openModal('권순호','A조 옴니대원','010-2539-1799','1980.12.14','2026.02.11')"><span class="pos-tag">옴니대원</span><span class="name-text name-small">권순호</span></div>
-                <div class="person-card card-a" onclick="openModal('김영중','A조 보안조원','010-7726-5963','1959.02.26','2024.08.21')"><span class="pos-tag">의산연</span><span class="name-text name-small">김영중</span></div>
-                <div class="person-card card-a" onclick="openModal('김삼동','A조 보안조원','010-2345-8081','1967.02.01','2025.05.02')"><span class="pos-tag">의산연</span><span class="name-text name-small">김삼동</span></div>
-                <div class="person-card card-a" onclick="openModal('김전식','A조 옴니대원','010-3277-0808','1966.07.23','2025.02.10')"><span class="pos-tag">옴니대원</span><span class="name-text name-small">김전식</span></div>
-                <div class="person-card empty-card"></div>
-            </div></div>
+        <div class="sec-row">
+            <div class="sec-label" style="background:var(--a-bg); color:var(--a-text)">A조</div>
+            <div class="sec-content">
+                <div class="p-card" style="background:var(--a-bg)" onclick="openM('배준용','A조 조장','010-4717-7065','1969.12.24','22.07.26')"><span class="tag">성의</span><span class="name">배준용</span></div>
+                <div class="p-card" style="background:var(--a-bg)" onclick="openM('이명구','A조 조원','010-8638-5819','1964.09.15','25.03.21')"><span class="tag">성의</span><span class="name">이명구</span></div>
+                <div class="p-card" style="background:var(--a-bg)" onclick="openM('손병휘','A조 조장','010-9966-2090','1972.05.23','16.05.05')"><span class="tag">옴니</span><span class="name">손병휘</span></div>
+                <div class="p-card" style="background:var(--a-bg)" onclick="openM('권순호','A조 대원','010-2539-1799','1980.12.14','26.02.11')"><span class="tag">옴니</span><span class="name">권순호</span></div>
+                <div class="p-card" style="background:var(--a-bg)" onclick="openM('김영중','A조 조원','010-7726-5963','1959.02.26','24.08.21')"><span class="tag">의산연</span><span class="name">김영중</span></div>
+                <div class="p-card" style="background:var(--a-bg)" onclick="openM('김삼동','A조 조원','010-2345-8081','1967.02.01','25.05.02')"><span class="tag">의산연</span><span class="name">김삼동</span></div>
+                <div class="p-card" style="background:var(--a-bg)" onclick="openM('김전식','A조 대원','010-3277-0808','1966.07.23','25.02.10')"><span class="tag">옴니</span><span class="name">김전식</span></div>
+            </div>
         </div>
-        <div class="row">
-            <div class="side-label" style="background:var(--b-label); color:var(--b-text)">B조</div>
-            <div class="content-area"><div class="grid-box quad-grid">
-                <div class="person-card card-b" onclick="openModal('심규천','B조 보안조장','010-8287-9895','1967.04.10','2024.11.11')"><span class="pos-tag">성의회관</span><span class="name-text name-small">심규천</span></div>
-                <div class="person-card card-b" onclick="openModal('임종현','B조 보안조원','010-7741-6732','1968.01.18','2021.08.10')"><span class="pos-tag">성의회관</span><span class="name-text name-small">임종현</span></div>
-                <div class="person-card card-b" onclick="openModal('황일범','B조 옴니조장','010-8929-4294','1969.05.30','2022.04.01')"><span class="pos-tag">옴니조장</span><span class="name-text name-small">황일범</span></div>
-                <div class="person-card card-b" onclick="openModal('이상길','B조 옴니대원','010-9904-0247','1978.07.13','2024.09.11')"><span class="pos-tag">옴니대원</span><span class="name-text name-small">이상길</span></div>
-                <div class="person-card card-b" onclick="openModal('권영국','B조 보안조원','010-4085-9982','1969.07.20','2025.01.21')"><span class="pos-tag">의산연</span><span class="name-text name-small">권영국</span></div>
-                <div class="person-card card-b" onclick="openModal('전준수','B조 보안조원','010-5687-7107','1971.07.17','2025.04.03')"><span class="pos-tag">의산연</span><span class="name-text name-small">전준수</span></div>
-                <div class="person-card card-b" onclick="openModal('허용','B조 옴니대원','010-8845-0163','1968.08.01','2026.01.16')"><span class="pos-tag">옴니대원</span><span class="name-text name-small">허용</span></div>
-                <div class="person-card empty-card"></div>
-            </div></div>
+        <div class="sec-row">
+            <div class="sec-label" style="background:var(--b-bg); color:var(--b-text)">B조</div>
+            <div class="sec-content">
+                <div class="p-card" style="background:var(--b-bg)" onclick="openM('심규천','B조 조장','010-8287-9895','1967.04.10','24.11.11')"><span class="tag">성의</span><span class="name">심규천</span></div>
+                <div class="p-card" style="background:var(--b-bg)" onclick="openM('임종현','B조 조원','010-7741-6732','1968.01.18','21.08.10')"><span class="tag">성의</span><span class="name">임종현</span></div>
+                <div class="p-card" style="background:var(--b-bg)" onclick="openM('황일범','B조 조장','010-8929-4294','1969.05.30','22.04.01')"><span class="tag">옴니</span><span class="name">황일범</span></div>
+                <div class="p-card" style="background:var(--b-bg)" onclick="openM('이상길','B조 대원','010-9904-0247','1978.07.13','24.09.11')"><span class="tag">옴니</span><span class="name">이상길</span></div>
+                <div class="p-card" style="background:var(--b-bg)" onclick="openM('권영국','B조 조원','010-4085-9982','1969.07.20','25.01.21')"><span class="tag">의산연</span><span class="name">권영국</span></div>
+                <div class="p-card" style="background:var(--b-bg)" onclick="openM('전준수','B조 조원','010-5687-7107','1971.07.17','25.04.03')"><span class="tag">의산연</span><span class="name">전준수</span></div>
+                <div class="p-card" style="background:var(--b-bg)" onclick="openM('허용','B조 대원','010-8845-0163','1968.08.01','26.01.16')"><span class="tag">옴니</span><span class="name">허용</span></div>
+            </div>
         </div>
-        <div class="row">
-            <div class="side-label" style="background:var(--c-label); color:var(--c-text)">C조</div>
-            <div class="content-area"><div class="grid-box quad-grid">
-                <div class="person-card card-c" onclick="openModal('황재업','C조 보안조장','010-9278-6622','1980.03.12','2023.05.26')"><span class="pos-tag">성의회관</span><span class="name-text name-small">황재업</span></div>
-                <div class="person-card card-c" onclick="openModal('이태원','C조 보안조원','010-9265-7881','1963.11.23','2025.04.01')"><span class="pos-tag">성의회관</span><span class="name-text name-small">이태원</span></div>
-                <div class="person-card card-c" onclick="openModal('피재영','C조 옴니조장','010-9359-2569','1972.08.07','2022.04.19')"><span class="pos-tag">옴니조장</span><span class="name-text name-small">피재영</span></div>
-                <div class="person-card card-c" onclick="openModal('남형민','C조 옴니대원','010-8767-7073','1977.11.24','2018.02.27')"><span class="pos-tag">옴니대원</span><span class="name-text name-small">남형민</span></div>
-                <div class="person-card card-c" onclick="openModal('김태언','C조 보안조원','010-5386-5386','1971.03.04','2024.10.12')"><span class="pos-tag">의산연</span><span class="name-text name-small">김태언</span></div>
-                <div class="person-card card-c" onclick="openModal('이정석','C조 보안조원','010-2417-1173','1972.09.01','2025.07.21')"><span class="pos-tag">의산연</span><span class="name-text name-small">이정석</span></div>
-                <div class="person-card card-c" onclick="openModal('강경훈','C조 옴니대원','010-3436-6107','1981.05.04','2024.11.29')"><span class="pos-tag">옴니대원</span><span class="name-text name-small">강경훈</span></div>
-                <div class="person-card empty-card"></div>
-            </div></div>
+        <div class="sec-row">
+            <div class="sec-label" style="background:var(--c-bg); color:var(--c-text)">C조</div>
+            <div class="sec-content">
+                <div class="p-card" style="background:var(--c-bg)" onclick="openM('황재업','C조 조장','010-9278-6622','1980.03.12','23.05.26')"><span class="tag">성의</span><span class="name">황재업</span></div>
+                <div class="p-card" style="background:var(--c-bg)" onclick="openM('이태원','C조 조원','010-9265-7881','1963.11.23','25.04.01')"><span class="tag">성의</span><span class="name">이태원</span></div>
+                <div class="p-card" style="background:var(--c-bg)" onclick="openM('피재영','C조 조장','010-9359-2569','1972.08.07','22.04.19')"><span class="tag">옴니</span><span class="name">피재영</span></div>
+                <div class="p-card" style="background:var(--c-bg)" onclick="openM('남형민','C조 대원','010-8767-7073','1977.11.24','18.02.27')"><span class="tag">옴니</span><span class="name">남형민</span></div>
+                <div class="p-card" style="background:var(--c-bg)" onclick="openM('김태언','C조 조원','010-5386-5386','1971.03.04','24.10.12')"><span class="tag">의산연</span><span class="name">김태언</span></div>
+                <div class="p-card" style="background:var(--c-bg)" onclick="openM('이정석','C조 조원','010-2417-1173','1972.09.01','25.07.21')"><span class="tag">의산연</span><span class="name">이정석</span></div>
+                <div class="p-card" style="background:var(--c-bg)" onclick="openM('강경훈','C조 대원','010-3436-6107','1981.05.04','24.11.29')"><span class="tag">옴니</span><span class="name">강경훈</span></div>
+            </div>
         </div>
-        <div class="row">
-            <div class="side-label" style="background:var(--dorm-label); color:var(--dorm-text)">기숙사</div>
-            <div class="content-area"><div class="grid-box" style="grid-template-columns: repeat(3, 1fr);">
-                <div class="person-card card-dorm" onclick="openModal('이강택','기숙사 보안반장','010-9048-6708','1965.08.13','2023.08.03')"><span class="pos-tag">보안반장</span><span class="name-text name-small">이강택</span></div>
-                <div class="person-card card-dorm" onclick="openModal('유시균','기숙사 보안조원','010-8737-5770','1962.02.21','2008.10.15')"><span class="pos-tag">보안조원</span><span class="name-text name-small">유시균</span></div>
-                <div class="person-card card-dorm" onclick="openModal('이상헌','기숙사 보안조원','010-4285-4231','1965.10.09','2022.04.01')"><span class="pos-tag">보안조원</span><span class="name-text name-small">이상헌</span></div>
-            </div></div>
+        <div class="sec-row">
+            <div class="sec-label" style="background:var(--dorm-bg); color:var(--dorm-text)">기숙사</div>
+            <div class="sec-content" style="grid-template-columns: repeat(3, 1fr);">
+                <div class="p-card" style="background:var(--dorm-bg)" onclick="openM('이강택','반장','010-9048-6708','1965.08.13','23.08.03')"><span class="tag">반장</span><span class="name">이강택</span></div>
+                <div class="p-card" style="background:var(--dorm-bg)" onclick="openM('유시균','조원','010-8737-5770','1962.02.21','08.10.15')"><span class="tag">조원</span><span class="name">유시균</span></div>
+                <div class="p-card" style="background:var(--dorm-bg)" onclick="openM('이상헌','조원','010-4285-4231','1965.10.09','22.04.01')"><span class="tag">조원</span><span class="name">이상헌</span></div>
+            </div>
         </div>
     </div>
 </div>
 
 <div id="clean-container" class="main-container">
     <div class="sub-tabs">
-        <div id="stab-sh" class="sub-tab-item active" onclick="switchSubTab('sh')">🏢 성의회관</div>
-        <div id="stab-is" class="sub-tab-item" onclick="switchSubTab('is')">🔬 의산연/별관</div>
+        <div class="sub-tab active" onclick="showSub('sh')">🏢 성의회관</div>
+        <div class="sub-tab" onclick="showSub('is')">🔬 의산연/별관</div>
     </div>
-
-    <div id="sh-clean" class="clean-container active">
-        <div class="card">
-            <div class="header sh-bg">성의회관 미화팀 (2026.06)</div>
-            <table>
-                <thead><tr><th>위치</th><th>성명</th><th>연락처</th><th>비고</th></tr></thead>
-                <tbody>
-                    <tr><td>14층</td><td>유순복</td><td><a href="tel:01063700845" class="tel-link">010-6370</a></td><td>B(1)</td></tr>
-                    <tr><td>13층</td><td>박태연</td><td><a href="tel:01056828927" class="tel-link">010-5682</a></td><td>B(1)</td></tr>
-                    <tr><td>12층</td><td>기성원</td><td><a href="tel:01026189120" class="tel-link">010-2618</a></td><td>A(2)</td></tr>
-                    <tr><td>11층</td><td>김성순</td><td><a href="tel:01046047608" class="tel-link">010-4604</a></td><td>A(3)</td></tr>
-                    <tr><td>10층</td><td>박현순</td><td><a href="tel:01087147703" class="tel-link">010-8714</a></td><td>B장(1)</td></tr>
-                    <tr><td>9층</td><td>이재숙</td><td><a href="tel:01087621178" class="tel-link">010-8762</a></td><td>A(3)</td></tr>
-                    <tr><td>9층</td><td>채예홍</td><td><a href="tel:01052024638" class="tel-link">010-5202</a></td><td>B(4)</td></tr>
-                    <tr><td>8층</td><td>이애란</td><td><a href="tel:01030468520" class="tel-link">010-3046</a></td><td>A장(2)</td></tr>
-                    <tr><td>7층</td><td>박인순</td><td><a href="tel:01057451427" class="tel-link">010-5745</a></td><td>B(1)</td></tr>
-                    <tr><td>6층</td><td>김순이</td><td><a href="tel:01063706807" class="tel-link">010-6370</a></td><td>A(4)</td></tr>
-                    <tr><td>5층</td><td>최정숙</td><td><a href="tel:01038502011" class="tel-link">010-3850</a></td><td>B(3장)</td></tr>
-                    <tr><td>4,5층</td><td>신춘옥</td><td><a href="tel:01023058914" class="tel-link">010-2305</a></td><td>B(2)</td></tr>
-                    <tr><td>4층</td><td>조계순</td><td><a href="tel:01022117864" class="tel-link">010-2211</a></td><td>A(4)</td></tr>
-                    <tr><td>3층</td><td>김옥화</td><td><a href="tel:01080009643" class="tel-link">010-8000</a></td><td>B(4장)</td></tr>
-                    <tr><td>2층</td><td>임용숙</td><td><a href="tel:01032832799" class="tel-link">010-3283</a></td><td>A(4)</td></tr>
-                    <tr><td>1층</td><td>허봉혜</td><td><a href="tel:01090147470" class="tel-link">010-9014</a></td><td>B(3)</td></tr>
-                    <tr><td>1층</td><td>양명선</td><td><a href="tel:01066711442" class="tel-link">010-6671</a></td><td>A(1)</td></tr>
-                    <tr><td>지원</td><td>김칠규</td><td><a href="tel:01062990079" class="tel-link">010-6299</a></td><td>A(4)</td></tr>
-                    <tr><td>지원</td><td>천재수</td><td><a href="tel:01075376059" class="tel-link">010-7537</a></td><td>B(3)</td></tr>
-                    <tr><td>지원</td><td>박문희</td><td><a href="tel:01088599333" class="tel-link">010-8859</a></td><td>B(1)</td></tr>
-                    <tr><td>지원</td><td>최연주</td><td><a href="tel:01057441772" class="tel-link">010-5744</a></td><td>A장(2)</td></tr>
-                    <tr><td>지원</td><td>양경순</td><td><a href="tel:01057289427" class="tel-link">010-5728</a></td><td>A(2)</td></tr>
-                    <tr class="highlight"><td>반장</td><td>허영찬</td><td><a href="tel:01098943415" class="tel-link">010-9894</a></td><td>지원</td></tr>
-                </tbody>
-            </table>
-        </div>
+    <div id="sh-table" class="sub-content">
+        <table>
+            <tr><th>위치</th><th>성명</th><th>연락처</th><th>비고</th></tr>
+            <tr><td>14층</td><td>유순복</td><td><a href="tel:01063700845" class="tel-btn">010-6370</a></td><td>B(1)</td></tr>
+            <tr><td>13층</td><td>박태연</td><td><a href="tel:01056828927" class="tel-btn">010-5682</a></td><td>B(1)</td></tr>
+            <tr><td>12층</td><td>기성원</td><td><a href="tel:01026189120" class="tel-btn">010-2618</a></td><td>A(2)</td></tr>
+            <tr><td>11층</td><td>김성순</td><td><a href="tel:01046047608" class="tel-btn">010-4604</a></td><td>A(3)</td></tr>
+            <tr><td>10층</td><td>박현순</td><td><a href="tel:01087147703" class="tel-btn">010-8714</a></td><td>B장(1)</td></tr>
+            <tr><td>9층</td><td>이재숙</td><td><a href="tel:01087621178" class="tel-btn">010-8762</a></td><td>A(3)</td></tr>
+            <tr><td>9층</td><td>채예홍</td><td><a href="tel:01052024638" class="tel-btn">010-5202</a></td><td>B(4)</td></tr>
+            <tr><td>8층</td><td>이애란</td><td><a href="tel:01030468520" class="tel-btn">010-3046</a></td><td>A장(2)</td></tr>
+            <tr><td>7층</td><td>박인순</td><td><a href="tel:01057451427" class="tel-btn">010-5745</a></td><td>B(1)</td></tr>
+            <tr><td>6층</td><td>김순이</td><td><a href="tel:01063706807" class="tel-btn">010-6370</a></td><td>A(4)</td></tr>
+            <tr><td>5층</td><td>최정숙</td><td><a href="tel:01038502011" class="tel-btn">010-3850</a></td><td>B(3장)</td></tr>
+            <tr><td>4,5층</td><td>신춘옥</td><td><a href="tel:01023058914" class="tel-btn">010-2305</a></td><td>B(2)</td></tr>
+            <tr><td>4층</td><td>조계순</td><td><a href="tel:01022117864" class="tel-btn">010-2211</a></td><td>A(4)</td></tr>
+            <tr><td>3층</td><td>김옥화</td><td><a href="tel:01080009643" class="tel-btn">010-8000</a></td><td>B(4장)</td></tr>
+            <tr><td>2층</td><td>임용숙</td><td><a href="tel:01032832799" class="tel-btn">010-3283</a></td><td>A(4)</td></tr>
+            <tr><td>1층</td><td>허봉혜</td><td><a href="tel:01090147470" class="tel-btn">010-9014</a></td><td>B(3)</td></tr>
+            <tr><td>1층</td><td>양명선</td><td><a href="tel:01066711442" class="tel-btn">010-6671</a></td><td>A(1)</td></tr>
+            <tr><td>지원</td><td>김칠규</td><td><a href="tel:01062990079" class="tel-btn">010-6299</a></td><td>A(4)</td></tr>
+            <tr><td>지원</td><td>천재수</td><td><a href="tel:01075376059" class="tel-btn">010-7537</a></td><td>B(3)</td></tr>
+            <tr><td>지원</td><td>박문희</td><td><a href="tel:01088599333" class="tel-btn">010-8859</a></td><td>B(1)</td></tr>
+            <tr><td>지원</td><td>최연주</td><td><a href="tel:01057441772" class="tel-btn">010-5744</a></td><td>A장(2)</td></tr>
+            <tr><td>지원</td><td>양경순</td><td><a href="tel:01057289427" class="tel-btn">010-5728</a></td><td>A(2)</td></tr>
+            <tr style="background:#fff9db"><td>반장</td><td>허영찬</td><td><a href="tel:01098943415" class="tel-btn">010-9894</a></td><td>지원</td></tr>
+        </table>
     </div>
-
-    <div id="is-clean" class="clean-container">
-        <div class="card">
-            <div class="header is-bg">의산연 미화팀 (2026.06)</div>
-            <table>
-                <thead><tr><th>위치</th><th>성명</th><th>연락처</th><th>비고</th></tr></thead>
-                <tbody>
-                    <tr><td>8층</td><td>안순재</td><td><a href="tel:01091198879" class="tel-link is-tel">010-9119</a></td><td>A조</td></tr>
-                    <tr><td>7층</td><td>안순재</td><td><a href="tel:01091198880" class="tel-link is-tel">010-9119</a></td><td>A조</td></tr>
-                    <tr><td>6층</td><td>장 성</td><td><a href="tel:01089383988" class="tel-link is-tel">010-8938</a></td><td>B조</td></tr>
-                    <tr><td>5층</td><td>조미연</td><td><a href="tel:01022522036" class="tel-link is-tel">010-2252</a></td><td>A조</td></tr>
-                    <tr><td>4층</td><td>김정옥</td><td><a href="tel:01090110659" class="tel-link is-tel">010-9011</a></td><td>B조</td></tr>
-                    <tr><td>3층</td><td>장 성</td><td><a href="tel:01089383988" class="tel-link is-tel">010-8938</a></td><td>B조</td></tr>
-                    <tr><td>2층</td><td>이연숙</td><td><a href="tel:01091173965" class="tel-link is-tel">010-9117</a></td><td>A 선임</td></tr>
-                    <tr><td>2층</td><td>강민례</td><td><a href="tel:01033859952" class="tel-link is-tel">010-3385</a></td><td>세포실</td></tr>
-                    <tr><td>1층(남)</td><td>이정숙</td><td><a href="tel:01037220765" class="tel-link is-tel">010-3722</a></td><td>A조</td></tr>
-                    <tr><td>1층(북)</td><td>이명자</td><td><a href="tel:01062742355" class="tel-link is-tel">010-6274</a></td><td>B조</td></tr>
-                    <tr><td>B1층</td><td>이서빈</td><td><a href="tel:01077558613" class="tel-link is-tel">010-7755</a></td><td>A조</td></tr>
-                    <tr><td>B2층</td><td>선양순</td><td><a href="tel:01099677301" class="tel-link is-tel">010-9967</a></td><td>B조</td></tr>
-                    <tr><td>지원</td><td>정순식</td><td><a href="tel:01095640029" class="tel-link is-tel">010-9564</a></td><td>A(지)</td></tr>
-                    <tr><td>지원</td><td>조성일</td><td><a href="tel:01039522441" class="tel-link is-tel">010-3952</a></td><td>B(지)</td></tr>
-                    <tr class="sub-header"><td colspan="4">* 별 관 *</td></tr>
-                    <tr><td>5층</td><td>이선자</td><td><a href="tel:01082107106" class="tel-link is-tel">010-8210</a></td><td>A조</td></tr>
-                    <tr><td>3,4층</td><td>김인숙</td><td><a href="tel:01041206055" class="tel-link is-tel">010-4120</a></td><td>B조</td></tr>
-                    <tr><td>1,2층</td><td>정혜숙</td><td><a href="tel:01091300652" class="tel-link is-tel">010-9130</a></td><td>B조</td></tr>
-                    <tr class="highlight"><td>지원</td><td>이창남</td><td><a href="tel:01031330638" class="tel-link is-tel">010-3133</a></td><td>A조장</td></tr>
-                </tbody>
-            </table>
-        </div>
+    <div id="is-table" class="sub-content" style="display:none">
+        <table>
+            <tr><th>위치</th><th>성명</th><th>연락처</th><th>비고</th></tr>
+            <tr><td>8층</td><td>안순재</td><td><a href="tel:01091198879" class="tel-btn">010-9119</a></td><td>A조</td></tr>
+            <tr><td>7층</td><td>안순재</td><td><a href="tel:01091198880" class="tel-btn">010-9119</a></td><td>A조</td></tr>
+            <tr><td>6층</td><td>장 성</td><td><a href="tel:01089383988" class="tel-btn">010-8938</a></td><td>B조</td></tr>
+            <tr><td>5층</td><td>조미연</td><td><a href="tel:01022522036" class="tel-btn">010-2252</a></td><td>A조</td></tr>
+            <tr><td>4층</td><td>김정옥</td><td><a href="tel:01090110659" class="tel-btn">010-9011</a></td><td>B조</td></tr>
+            <tr><td>3층</td><td>장 성</td><td><a href="tel:01089383988" class="tel-btn">010-8938</a></td><td>B조</td></tr>
+            <tr><td>2층</td><td>이연숙</td><td><a href="tel:01091173965" class="tel-btn">010-9117</a></td><td>A 선임</td></tr>
+            <tr><td>2층</td><td>강민례</td><td><a href="tel:01033859952" class="tel-btn">010-3385</a></td><td>세포실</td></tr>
+            <tr><td>1층(남)</td><td>이정숙</td><td><a href="tel:01037220765" class="tel-btn">010-3722</a></td><td>A조</td></tr>
+            <tr><td>1층(북)</td><td>이명자</td><td><a href="tel:01062742355" class="tel-btn">010-6274</a></td><td>B조</td></tr>
+            <tr><td>B1층</td><td>이서빈</td><td><a href="tel:01077558613" class="tel-btn">010-7755</a></td><td>A조</td></tr>
+            <tr><td>B2층</td><td>선양순</td><td><a href="tel:01099677301" class="tel-btn">010-9967</a></td><td>B조</td></tr>
+            <tr><td>지원</td><td>정순식</td><td><a href="tel:01095640029" class="tel-btn">010-9564</a></td><td>A(지)</td></tr>
+            <tr><td>지원</td><td>조성일</td><td><a href="tel:01039522441" class="tel-btn">010-3952</a></td><td>B(지)</td></tr>
+            <tr style="background: #f1f3f5"><td colspan="4">별 관</td></tr>
+            <tr><td>5층</td><td>이선자</td><td><a href="tel:01082107106" class="tel-btn">010-8210</a></td><td>A조</td></tr>
+            <tr><td>3,4층</td><td>김인숙</td><td><a href="tel:01041206055" class="tel-btn">010-4120</a></td><td>B조</td></tr>
+            <tr><td>1,2층</td><td>정혜숙</td><td><a href="tel:01091300652" class="tel-btn">010-9130</a></td><td>B조</td></tr>
+            <tr style="background:#fff9db"><td>지원</td><td>이창남</td><td><a href="tel:01031330638" class="tel-btn">010-3133</a></td><td>A조장</td></tr>
+        </table>
     </div>
 </div>
 
-<div id="modal" onclick="closeModal()">
-    <div class="modal-content" onclick="event.stopPropagation()">
-        <div id="m-name" class="m-name">이름</div>
-        <div id="m-pos" class="m-pos">직책</div>
-        <div class="m-info-box">
-            <div class="m-line"><span>🎂 <b>생년월일</b></span> <span id="m-birth">-</span></div>
-            <div class="m-line"><span>📅 <b>입사일자</b></span> <span id="m-entry">-</span></div>
-            <div class="m-line"><span>📞 <b>연락처</b></span> <span id="m-tel">-</span></div>
+<div id="modal" onclick="this.style.display='none'">
+    <div class="m-box" onclick="event.stopPropagation()">
+        <h2 id="m-n">이름</h2>
+        <p id="m-p" style="color:var(--blue-point); margin-bottom:10px">직책</p>
+        <div style="text-align:left; font-size:13px; line-height:1.8; background:#f8f9fa; padding:10px; border-radius:8px;">
+            🎂 생일: <span id="m-b"></span><br>
+            📅 입사: <span id="m-e"></span><br>
+            📞 번호: <span id="m-t"></span>
         </div>
-        <a id="m-link" href="#" class="btn-call">📞 바로 전화걸기</a>
-        <div class="btn-close" onclick="closeModal()">닫기</div>
+        <a id="m-l" href="" class="call-link">📞 전화 걸기</a>
     </div>
-</div>
-
-<div class="footer-info">
-    보안팀(2026.03) & 미화팀(2026.06) 데이터<br>
-    이름 또는 번호를 누르면 통화가 가능합니다.
 </div>
 
 <script>
-    function switchMainTab(type) {
-        document.querySelectorAll('.main-tab-item').forEach(t => t.classList.remove('active'));
+    function showTab(id) {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         document.querySelectorAll('.main-container').forEach(c => c.classList.remove('active'));
-        document.getElementById('tab-' + type).classList.add('active');
-        document.getElementById(type + '-container').classList.add('active');
+        event.target.classList.add('active');
+        document.getElementById(id + '-container').classList.add('active');
     }
-
-    function switchSubTab(loc) {
-        document.querySelectorAll('.sub-tab-item').forEach(t => t.classList.remove('active'));
-        document.querySelectorAll('.clean-container').forEach(c => c.classList.remove('active'));
-        document.getElementById('stab-' + loc).classList.add('active');
-        document.getElementById(loc + '-clean').classList.add('active');
+    function showSub(id) {
+        document.querySelectorAll('.sub-tab').forEach(b => b.classList.remove('active'));
+        document.getElementById('sh-table').style.display = id==='sh' ? 'block' : 'none';
+        document.getElementById('is-table').style.display = id==='is' ? 'block' : 'none';
+        event.target.classList.add('active');
     }
-
-    function openModal(name, pos, tel, birth, entry) {
-        document.getElementById('m-name').innerText = name;
-        document.getElementById('m-pos').innerText = pos;
-        document.getElementById('m-birth').innerText = birth;
-        document.getElementById('m-entry').innerText = entry;
-        document.getElementById('m-tel').innerText = tel;
-        document.getElementById('m-link').href = "tel:" + tel.replace(/-/g, "");
+    function openM(n, p, t, b, e) {
+        document.getElementById('m-n').innerText = n;
+        document.getElementById('m-p').innerText = p;
+        document.getElementById('m-t').innerText = t;
+        document.getElementById('m-b').innerText = b;
+        document.getElementById('m-e').innerText = e;
+        document.getElementById('m-l').href = "tel:" + t;
         document.getElementById('modal').style.display = 'flex';
     }
-
-    function closeModal() { document.getElementById('modal').style.display = 'none'; }
 </script>
-
 </body>
 </html>
