@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>시신기증 접수 통합 매뉴얼</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .active-tab { border-bottom: 3px solid #2563eb; color: #2563eb; font-weight: bold; }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        body { -webkit-tap-highlight-color: transparent; }
+        .info-card { background: white; border-radius: 12px; padding: 16px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); border: 1px solid #e5e7eb; }
+        .btn-call { transition: transform 0.1s; }
+        .btn-call:active { transform: scale(0.98); }
+        details summary::-webkit-details-marker { display: none; }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-900 font-sans pb-28">
+
+    <!-- Header -->
+    <header class="bg-blue-800 text-white p-4 sticky top-0 z-50 shadow-md">
+        <div class="flex justify-between items-center max-w-lg mx-auto">
+            <div>
+                <h1 class="text-lg font-bold flex items-center">
+                    <span class="mr-2">📁</span> 시신기증 접수 매뉴얼
+                </h1>
+                <p class="text-[10px] opacity-80">가톨릭대학교 의과대학 해부학교실</p>
+            </div>
+            <span class="text-[10px] bg-blue-700 px-2 py-1 rounded-full border border-blue-400">안내실 실무자용</span>
+        </div>
+    </header>
+
+    <!-- Main Navigation -->
+    <nav class="bg-white border-b sticky top-[60px] z-40 flex overflow-x-auto whitespace-nowrap hide-scrollbar shadow-sm">
+        <button onclick="openTab(event, 'call')" class="tab-btn px-6 py-4 flex-shrink-0 active-tab">📞 응대/접수</button>
+        <button onclick="openTab(event, 'check')" class="tab-btn px-6 py-4 flex-shrink-0">⚠️ 필수체크</button>
+        <button onclick="openTab(event, 'process')" class="tab-btn px-6 py-4 flex-shrink-0">📋 절차/모심</button>
+        <button onclick="openTab(event, 'faq')" class="tab-btn px-6 py-4 flex-shrink-0">❓ FAQ 전체</button>
+    </nav>
+
+    <main class="max-w-lg mx-auto p-4 space-y-4">
+
+        <!-- Tab 1: 응대 및 접수 -->
+        <section id="call" class="tab-content active space-y-4">
+            <div class="bg-blue-50 border-l-4 border-blue-600 p-4 rounded shadow-sm">
+                <h2 class="text-blue-800 font-bold mb-1 text-sm">표준 응대 멘트</h2>
+                <p class="text-sm italic text-blue-700">“가톨릭의과대학 안내실 OOO입니다.”</p>
+                <div class="mt-3 p-3 bg-white rounded border border-blue-100">
+                    <p class="text-xs font-bold text-red-600 mb-1">유가족 동의 확인 필수:</p>
+                    <p class="text-sm font-medium">“전화주시는 분은 고인과 어떠한 관계이신가요?”</p>
+                    <p class="text-[11px] text-gray-500 mt-1">* 유가족(직계존비속) 직접 통화 원칙</p>
+                </div>
+            </div>
+
+            <!-- 담당자 (주상건 차장 일원화) -->
+            <div class="grid grid-cols-1 gap-2">
+                <a href="tel:22587135" class="btn-call flex items-center justify-between bg-white border-2 border-blue-600 text-blue-600 p-4 rounded-xl shadow-sm">
+                    <div class="flex flex-col">
+                        <span class="text-[10px] opacity-70 font-bold">평일 상담 (09:30~16:30)</span>
+                        <span class="font-bold">시신기증 상담실</span>
+                    </div>
+                    <span class="text-lg font-bold">2258-7135</span>
+                </a>
+                <a href="tel:01094966483" class="btn-call flex items-center justify-between bg-blue-600 text-white p-4 rounded-xl shadow-lg">
+                    <div class="flex flex-col">
+                        <span class="text-[10px] opacity-80">비상/야간/주말 담당</span>
+                        <span class="font-bold">주상건 차장 (긴급)</span>
+                    </div>
+                    <span class="text-lg font-bold">010-9496-6483</span>
+                </a>
+            </div>
+
+            <div class="info-card border-red-200 bg-red-50">
+                <h3 class="font-bold text-sm text-red-700 mb-2 flex items-center">
+                    <span class="mr-2">🚨</span> 연락처 처리 요령 및 주의사항
+                </h3>
+                <ul class="text-xs space-y-2 text-red-800 leading-relaxed font-medium">
+                    <li>• <span class="bg-red-200 px-1">절대금지:</span> 담당자의 <strong>개인 핸드폰 번호를 유족에게 직접 알려주지 마십시오.</strong></li>
+                    <li>• <span class="bg-red-200 px-1">안내방법:</span> "담당자가 부재중이므로 내용을 전달하여 연락드리도록 하겠습니다"라고 안내 후 주상건 차장님께 즉시 보고하십시오.</li>
+                    <li>• <span class="bg-red-200 px-1">일원화:</span> 현재 모든 야간/주말 상황은 <strong>주상건 차장님 한 분</strong>이 담당합니다.</li>
+                </ul>
+            </div>
+
+            <div class="info-card">
+                <h3 class="font-bold text-sm border-b pb-2 mb-3 flex items-center">
+                    <span class="mr-2">📝</span> 접수 시 기록사항
+                </h3>
+                <ul class="grid grid-cols-1 gap-y-3 text-sm">
+                    <li class="flex justify-between border-b border-dashed pb-1">
+                        <span class="text-gray-500">인적사항</span>
+                        <span class="font-medium text-right">고인 성함, 주민번호(13자리)</span>
+                    </li>
+                    <li class="flex justify-between border-b border-dashed pb-1">
+                        <span class="text-gray-500">사망정보</span>
+                        <span class="font-medium text-right">사망일시, 장소, 원인</span>
+                    </li>
+                    <li class="flex justify-between border-b border-dashed pb-1 text-blue-700 font-bold">
+                        <span>모심 선택</span>
+                        <span class="text-right underline">즉시모심 / 장례후 모심</span>
+                    </li>
+                    <li class="flex justify-between border-b border-dashed pb-1">
+                        <span class="text-gray-500">신고자</span>
+                        <span class="font-medium text-right">성함, 연락처, 관계</span>
+                    </li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Tab 2: 필수체크 (불가 사유) -->
+        <section id="check" class="tab-content space-y-4">
+            <div class="bg-red-50 border-l-4 border-red-500 p-4 rounded shadow-sm">
+                <h2 class="text-red-700 font-bold mb-3 flex items-center">
+                    <span class="mr-2">🚫</span> 시신기증 불가 사유
+                </h2>
+                <div class="space-y-3 text-sm text-red-900 font-medium">
+                    <p class="flex items-start"><span class="w-5 h-5 bg-red-200 text-red-700 rounded-full flex items-center justify-center mr-2 mt-0.5 text-[10px] font-bold flex-shrink-0">1</span> 사고사 (교통사고, 자살, 타살, 변사 등)</p>
+                    <p class="flex items-start"><span class="w-5 h-5 bg-red-200 text-red-700 rounded-full flex items-center justify-center mr-2 mt-0.5 text-[10px] font-bold flex-shrink-0">2</span> 전염성 질환 (에이즈, 성병, 1급 전염병 등)</p>
+                    <p class="flex items-start"><span class="w-5 h-5 bg-red-200 text-red-700 rounded-full flex items-center justify-center mr-2 mt-0.5 text-[10px] font-bold flex-shrink-0">3</span> 욕창이 심하여 보존이 불가능한 상태</p>
+                    <p class="flex items-start"><span class="w-5 h-5 bg-red-200 text-red-700 rounded-full flex items-center justify-center mr-2 mt-0.5 text-[10px] font-bold flex-shrink-0">4</span> 유가족의 반대가 있는 경우</p>
+                    <p class="flex items-start"><span class="w-5 h-5 bg-red-200 text-red-700 rounded-full flex items-center justify-center mr-2 mt-0.5 text-[10px] font-bold flex-shrink-0">5</span> 생전에 기증 서류가 등록되지 않은 경우</p>
+                </div>
+            </div>
+
+            <div class="info-card border-amber-200 bg-amber-50">
+                <h3 class="font-bold text-sm text-amber-800 mb-2">🏘️ 자택 사망 시 (절대주의)</h3>
+                <p class="text-xs text-amber-900 leading-relaxed mb-1">• 경찰 신고 후 <strong>사체검안서</strong> 발급이 필수입니다.</p>
+                <p class="text-xs text-red-600 font-bold">• 경찰의 시신인도 허가 전에는 대학 차량 발송이 절대 불가합니다.</p>
+            </div>
+            
+            <div class="info-card bg-slate-800 text-white">
+                <h3 class="font-bold text-sm mb-2 text-blue-300">👥 연고자가 없는 경우</h3>
+                <p class="text-xs leading-relaxed opacity-90">무연고 사망자는 원칙적으로 기증이 불가합니다. 이 경우 임의 판단하지 말고 <strong>즉시 조장에게 연락</strong>하십시오.</p>
+            </div>
+        </section>
+
+        <!-- Tab 3: 절차 및 모심 구분 -->
+        <section id="process" class="tab-content space-y-4">
+            <div class="info-card border-blue-200 bg-blue-50">
+                <h2 class="font-bold text-sm text-blue-800 mb-3 flex items-center">
+                    <span class="mr-2">🚛</span> 모심 방식 상세 안내
+                </h2>
+                <div class="space-y-3">
+                    <div class="p-3 bg-white rounded-lg border border-blue-200 shadow-sm">
+                        <h4 class="font-bold text-blue-700 text-xs mb-1 underline">방법 1. 즉시 모심</h4>
+                        <ul class="text-[11px] text-gray-600 space-y-1">
+                            <li>• 빈소를 차리지 않고 사망 즉시 대학 안치실로 모심</li>
+                            <li>• 장례 절차 없이 기증이 즉시 이루어짐</li>
+                            <li>• <span class="text-red-600 font-bold">주의:</span> 주상건 차장님께 즉시 보고하여 차량 배차 조율</li>
+                        </ul>
+                    </div>
+                    <div class="p-3 bg-white rounded-lg border border-blue-200 shadow-sm">
+                        <h4 class="font-bold text-blue-700 text-xs mb-1 underline">방법 2. 장례 후 모심 (3일장 등)</h4>
+                        <ul class="text-[11px] text-gray-600 space-y-1">
+                            <li>• 장례식장에서 3일장 등 장례 의식을 모두 치름</li>
+                            <li>• 발인 일시에 맞춰 대학 안치실로 운구함</li>
+                            <li>• <span class="text-red-600 font-bold">주의:</span> 발인 일시를 주상건 차장님께 미리 통보</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-card">
+                <h2 class="font-bold text-sm mb-4 flex items-center"><span class="mr-2">🏥</span> 협력 장례식장 명단</h2>
+                <div class="grid grid-cols-1 gap-2">
+                    <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg border">
+                        <span class="text-xs font-bold">서울성모병원</span>
+                        <a href="tel:0222585940" class="text-blue-600 font-mono font-bold">02-2258-5940</a>
+                    </div>
+                    <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg border">
+                        <span class="text-xs font-bold">여의도성모병원</span>
+                        <a href="tel:0237791526" class="text-blue-600 font-mono font-bold">02-3779-1526</a>
+                    </div>
+                    <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg border">
+                        <span class="text-xs font-bold">은평성모병원</span>
+                        <a href="tel:0220304444" class="text-blue-600 font-mono font-bold">02-2030-4444</a>
+                    </div>
+                    <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg border">
+                        <span class="text-xs font-bold">의정부성모병원</span>
+                        <a href="tel:0318203468" class="text-blue-600 font-mono font-bold">031-820-3468</a>
+                    </div>
+                    <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg border">
+                        <span class="text-xs font-bold">부천성모병원</span>
+                        <a href="tel:0323407300" class="text-blue-600 font-mono font-bold">032-340-7300</a>
+                    </div>
+                    <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg border">
+                        <span class="text-xs font-bold">성빈센트병원</span>
+                        <a href="tel:0312497114" class="text-blue-600 font-mono font-bold">031-249-7114</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tab 4: FAQ 전체 수록 -->
+        <section id="faq" class="tab-content space-y-3">
+            <div class="info-card bg-amber-50 border-amber-200">
+                <h2 class="font-bold text-amber-900 mb-2 text-sm italic">⚙️ 내부 근무 및 보고 지침</h2>
+                <ul class="text-[11px] space-y-2 text-amber-800 font-medium">
+                    <li>• <strong>착신전환:</strong> 근무 시작 시 <span class="bg-white px-1 border rounded">#2</span> 실행 확인</li>
+                    <li>• <strong>보고:</strong> 접수 시 <strong>접수증 캡처</strong>하여 <strong>주상건 차장</strong>께 전달</li>
+                    <li>• <strong>통화:</strong> 즉시모심은 접수 즉시 담당자와 <strong>직접 통화</strong>까지 완료할 것</li>
+                    <li>• <strong>오류:</strong> 평일 9시반 이후 의산연(8200)으로 전화오면 성의회관(8300) 연락</li>
+                </ul>
+            </div>
+
+            <div class="space-y-2">
+                <h2 class="font-bold text-sm px-1 mb-2">❓ 시신기증 FAQ (11개 전체)</h2>
+                
+                <details class="bg-white p-3 rounded-lg border shadow-sm group">
+                    <summary class="text-xs font-bold list-none flex justify-between items-center cursor-pointer">
+                        <span>Q1. 기증이 불가능한 경우는?</span>
+                        <span class="text-blue-500 group-open:rotate-180 transition-transform">▼</span>
+                    </summary>
+                    <p class="text-[11px] text-gray-600 mt-2">유가족 반대, 사고사(자살 등), 전염성 질환, 사전 미등록, 사망 시 유가족 부재 등입니다.</p>
+                </details>
+
+                <details class="bg-white p-3 rounded-lg border shadow-sm group">
+                    <summary class="text-xs font-bold list-none flex justify-between items-center cursor-pointer">
+                        <span>Q2. 기증 시 장례 절차는?</span>
+                        <span class="text-blue-500 group-open:rotate-180 transition-transform">▼</span>
+                    </summary>
+                    <p class="text-[11px] text-gray-600 mt-2">3일장은 유가족이 치르셔야 하며, 발인 시 대학 차량으로 모십니다. 비용은 유가족 부담입니다.</p>
+                </details>
+
+                <details class="bg-white p-3 rounded-lg border shadow-sm group">
+                    <summary class="text-xs font-bold list-none flex justify-between items-center cursor-pointer">
+                        <span>Q3. 기증 후 유골은 어떻게 되나요?</span>
+                        <span class="text-blue-500 group-open:rotate-180 transition-transform">▼</span>
+                    </summary>
+                    <p class="text-[11px] text-gray-600 mt-2">화장 후 대학 참사랑묘역(용인)에 10년간 안치되거나 유가족에게 인도됩니다.</p>
+                </details>
+
+                <details class="bg-white p-3 rounded-lg border shadow-sm group">
+                    <summary class="text-xs font-bold list-none flex justify-between items-center cursor-pointer">
+                        <span>Q4. 연구 기간은 얼마나 되나요?</span>
+                        <span class="text-blue-500 group-open:rotate-180 transition-transform">▼</span>
+                    </summary>
+                    <p class="text-[11px] text-gray-600 mt-2">의학교육 및 연구를 위해 보통 2~3년 정도 소요됩니다.</p>
+                </details>
+
+                <details class="bg-white p-3 rounded-lg border shadow-sm group">
+                    <summary class="text-xs font-bold list-none flex justify-between items-center cursor-pointer">
+                        <span>Q5. 시신표본승낙서란 무엇인가요?</span>
+                        <span class="text-blue-500 group-open:rotate-180 transition-transform">▼</span>
+                    </summary>
+                    <p class="text-[11px] text-gray-600 mt-2">연구 가치가 높은 경우 표본으로 제작하여 영구 보존하는 것에 대한 동의입니다.</p>
+                </details>
+
+                <details class="bg-white p-3 rounded-lg border shadow-sm group">
+                    <summary class="text-xs font-bold list-none flex justify-between items-center cursor-pointer">
+                        <span>Q6. 장기기증과 시신기증의 차이는?</span>
+                        <span class="text-blue-500 group-open:rotate-180 transition-transform">▼</span>
+                    </summary>
+                    <p class="text-[11px] text-gray-600 mt-2">장기는 치료용, 시신은 교육/연구용입니다. 장기기증(안구 제외) 시 시신기증은 불가합니다.</p>
+                </details>
+
+                <details class="bg-white p-3 rounded-lg border shadow-sm group">
+                    <summary class="text-xs font-bold list-none flex justify-between items-center cursor-pointer">
+                        <span>Q7. 천주교 신자가 아니어도 가능한가요?</span>
+                        <span class="text-blue-500 group-open:rotate-180 transition-transform">▼</span>
+                    </summary>
+                    <p class="text-[11px] text-gray-600 mt-2">네, 종교에 상관없이 누구나 기증하실 수 있습니다.</p>
+                </details>
+
+                <details class="bg-white p-3 rounded-lg border shadow-sm group">
+                    <summary class="text-xs font-bold list-none flex justify-between items-center cursor-pointer">
+                        <span>Q8. 가족이 해외에 있는데 동의는?</span>
+                        <span class="text-blue-500 group-open:rotate-180 transition-transform">▼</span>
+                    </summary>
+                    <p class="text-[11px] text-gray-600 mt-2">해외 거주자도 인감증명서나 본인서명사실확인서 등 공식 서류가 필요합니다.</p>
+                </details>
+
+                <details class="bg-white p-3 rounded-lg border shadow-sm group">
+                    <summary class="text-xs font-bold list-none flex justify-between items-center cursor-pointer">
+                        <span>Q9. 나이 제한이 있나요?</span>
+                        <span class="text-blue-500 group-open:rotate-180 transition-transform">▼</span>
+                    </summary>
+                    <p class="text-[11px] text-gray-600 mt-2">나이 제한은 없습니다. 고인의 기증 의사와 가족 동의가 중요합니다.</p>
+                </details>
+
+                <details class="bg-white p-3 rounded-lg border shadow-sm group">
+                    <summary class="text-xs font-bold list-none flex justify-between items-center cursor-pointer">
+                        <span>Q10. 자녀가 없으면 누가 동의하나요?</span>
+                        <span class="text-blue-500 group-open:rotate-180 transition-transform">▼</span>
+                    </summary>
+                    <p class="text-[11px] text-gray-600 mt-2">배우자, 부모, 형제 순으로 동의가 필요합니다. 혈연 관계가 증명되어야 합니다.</p>
+                </details>
+
+                <details class="bg-white p-3 rounded-lg border shadow-sm group">
+                    <summary class="text-xs font-bold list-none flex justify-between items-center cursor-pointer">
+                        <span>Q11. 사전 등록 취소가 가능한가요?</span>
+                        <span class="text-blue-500 group-open:rotate-180 transition-transform">▼</span>
+                    </summary>
+                    <p class="text-[11px] text-gray-600 mt-2">네, 언제든지 본인 또는 가족의 요청으로 취소 가능합니다.</p>
+                </details>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Bottom Footer -->
+    <footer class="fixed bottom-0 w-full bg-white border-t p-3 flex justify-between items-center z-50 shadow-[0_-4px_12px_rgba(0,0,0,0.08)]">
+        <div class="flex flex-col">
+            <span class="text-[9px] text-gray-400 font-medium">참사랑묘역 (용인공원묘원 內)</span>
+            <span class="text-[11px] font-bold text-gray-700">031-334-0807</span>
+        </div>
+        <div class="h-6 w-[1px] bg-gray-200"></div>
+        <a href="tel:22581160" class="flex flex-col items-end">
+            <span class="text-[9px] text-indigo-400 font-medium">장기기증 상담</span>
+            <span class="text-[11px] font-bold text-indigo-600">2258-1160</span>
+        </a>
+    </footer>
+
+    <script>
+        function openTab(evt, tabName) {
+            var i, tabcontent, tablinks;
+            tabcontent = document.getElementsByClassName("tab-content");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].classList.remove("active");
+            }
+            tablinks = document.getElementsByClassName("tab-btn");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].classList.remove("active-tab");
+            }
+            document.getElementById(tabName).classList.add("active");
+            evt.currentTarget.classList.add("active-tab");
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>
+
