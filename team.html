@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>C조 통합 근무 시스템 v6.4</title>
+    <title>C조 통합 근무 시스템 v6.5</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap');
@@ -23,13 +23,13 @@
         .calendar-cell { border-right: 1px solid #e2e8f0; border-bottom: 1px solid #e2e8f0; display: flex; flex-direction: column; aspect-ratio: 1 / 1.3; }
         .sunday { color: #ef4444 !important; }
         .saturday { color: #3b82f6 !important; }
-        .is-today { outline: 3px solid #ef4444; outline-offset: -3px; z-index: 10; }
+        .is-today-logic { outline: 3px solid #ef4444; outline-offset: -3px; z-index: 10; }
     </style>
 </head>
 <body>
     <div class="max-w-md mx-auto bg-white min-h-screen shadow-lg flex flex-col">
         <div class="bg-[#2E4077] p-6 text-center text-white">
-            <h1 class="text-xl font-black">🛡️ C조 통합 근무 시스템 v6.4</h1>
+            <h1 class="text-xl font-black">🛡️ C조 통합 근무 시스템 v6.5</h1>
             <p id="current-time" class="text-[10px] opacity-70 mt-1.5 font-medium"></p>
         </div>
 
@@ -68,7 +68,7 @@
         const WORKER_COLS = {"황재업":"#D9EAD3","김태언":"#FFF2CC","이태원":"#EAD1DC","이정석":"#C9DAF8"};
         const DATA_LIST = [["07:00", "08:00", "보안실", "로비", "로비", "휴게"], ["08:00", "09:00", "보안실", "휴게", "휴게", "로비"], ["09:00", "10:00", "보안실", "순찰", "휴게", "로비"], ["10:00", "11:00", "휴게", "보안실", "로비", "휴게"], ["11:00", "12:00", "보안실", "중식", "로비", "중식"], ["12:00", "13:00", "중식", "보안실", "중식", "로비"], ["13:00", "14:00", "보안실", "휴게", "순찰", "로비"], ["14:00", "15:00", "순찰", "보안실", "로비", "휴게"], ["15:00", "16:00", "보안실", "휴게", "로비", "휴게"], ["16:00", "17:00", "휴게", "보안실", "휴게", "로비"], ["17:00", "18:00", "보안실", "휴게", "휴게", "로비"], ["18:00", "19:00", "보안실", "석식", "로비", "석식"], ["19:00", "20:00", "보안실", "보안실", "석식", "로비"], ["20:00", "21:00", "석식", "보안실", "로비", "휴게"], ["21:00", "22:00", "보안실", "순찰", "로비", "휴게"], ["22:00", "23:00", "순찰", "보안실", "순찰", "로비"], ["23:00", "00:00", "보안실", "휴게", "휴게", "로비"], ["00:00", "01:00", "보안실", "휴게", "휴게", "로비"], ["01:00", "01:40", "보안실", "휴게", "휴게", "로비"], ["01:40", "02:00", "보안실", "보안실", "로비", "로비"], ["02:00", "03:00", "휴게", "보안실", "로비", "휴게"], ["03:00", "04:00", "휴게", "보안실", "로비", "휴게"], ["04:00", "05:00", "휴게", "보안실", "로비", "휴게"], ["05:00", "06:00", "보안실", "순찰", "로비", "순찰"], ["06:00", "07:00", "보안실", "정리", "로비", "정리"]];
 
-        // [핵심] 날짜 판단: 오전 7시 기준 "근무 날짜" 결정 (달력과 100% 동일한 기준)
+        // [날짜 로직 핵심] 07시 기준 날짜 변경 (이것이 모든 계산의 기준)
         function getLogicDate(d) {
             const date = new Date(d);
             if (date.getHours() < 7) date.setDate(date.getDate() - 1);
@@ -76,7 +76,7 @@
             return date;
         }
 
-        // [핵심] 패턴 계산 (2025-01-01 C조 기준)
+        // 패턴 계산
         function getShift(d) {
             const lDate = getLogicDate(d);
             const base = new Date(config.baseDate).setHours(0,0,0,0);
@@ -84,7 +84,7 @@
             return config.patterns[((diff % 3) + 3) % 3];
         }
 
-        // [핵심] 근무자 명단 추출 (근무 날짜 기준 고정)
+        // 명단 추출
         function getWorkers(d) {
             const lDate = getLogicDate(d);
             if (getShift(lDate).name !== 'C') return null;
@@ -102,7 +102,7 @@
             let msg = isC ? "🛡️ 현재 C조 근무 시간입니다.<br>안전에 만전을 기해 주십시오!" : "😴 오늘은 휴무일입니다.<br>편안한 휴식 되세요.";
             document.getElementById('time-msg').innerHTML = `<div class="${!isC ? 'big-msg-box' : 'bg-blue-50 text-[#2E4077] p-4 rounded-2xl text-center font-bold text-[14px] mb-4'}">${msg}</div>`;
 
-            // 다음 근무일 계산 (현재 근무 날짜 이후의 첫 C조)
+            // 다음 근무일 계산 (Logic 오늘 이후 첫 C조)
             let nextD = new Date(lDate);
             do { nextD.setDate(nextD.getDate() + 1); } while (getShift(nextD).name !== 'C');
             document.getElementById('next-duty-notice').innerText = `다음 근무는 ${nextD.getMonth()+1}월 ${nextD.getDate()}일 입니다.`;
@@ -145,17 +145,19 @@
         }
 
         function renderCalendar() {
-            const now = new Date(); const grid = document.getElementById('calendar-grid-body'); grid.innerHTML = '';
+            const now = new Date(); const logicTodayStr = getLogicDate(now).toDateString();
+            const grid = document.getElementById('calendar-grid-body'); grid.innerHTML = '';
             document.getElementById('cal-title').innerText = `${now.getFullYear()}년 ${now.getMonth()+1}월`;
             const first = new Date(now.getFullYear(), now.getMonth(), 1).getDay(), last = new Date(now.getFullYear(), now.getMonth()+1, 0).getDate();
             for(let i=0; i<first; i++) grid.innerHTML += `<div class="calendar-cell bg-slate-50"></div>`;
             for(let d=1; d<=last; d++) {
-                const dt = new Date(now.getFullYear(), now.getMonth(), d), shift = getShift(dt);
-                const isToday = dt.toDateString() === new Date().toDateString();
-                const isDutyDay = shift.name === 'C';
-                grid.innerHTML += `<div class="calendar-cell ${isToday?'is-today':''}" style="background:${isDutyDay?shift.highlight:'transparent'}">
-                    <div class="text-center font-bold text-[10px] ${isDutyDay?'text-white':'text-slate-600'}">${d}</div>
-                    <div class="text-center font-black ${isDutyDay?'text-white':'text-slate-800'}" style="background:${isDutyDay?'transparent':shift.color}">${shift.name}</div>
+                const dt = new Date(now.getFullYear(), now.getMonth(), d); 
+                const shift = getShift(dt);
+                const isLogicToday = dt.toDateString() === logicTodayStr;
+                const isC = shift.name === 'C';
+                grid.innerHTML += `<div class="calendar-cell ${isLogicToday?'is-today-logic':''}" style="background:${isC?shift.highlight:'transparent'}">
+                    <div class="text-center font-bold text-[10px] ${isC?'text-white':'text-slate-600'}">${d}</div>
+                    <div class="text-center font-black ${isC?'text-white':'text-slate-800'}" style="background:${isC?'transparent':shift.color}">${shift.name}</div>
                 </div>`;
             }
         }
