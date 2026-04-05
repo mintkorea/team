@@ -17,24 +17,28 @@
         .bu-chip { transition: all 0.2s; border: 1.5px solid #e2e8f0; cursor: pointer; background: white; white-space: nowrap; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; }
         .bu-chip.active { background-color: #1E3A5F; color: white; border-color: #1E3A5F; font-weight: 900; }
         
-        /* 표 레이아웃 고정 및 개행 강제 */
+        /* 리스트형 원본 레이아웃 유지 */
         .fixed-table { table-layout: fixed; width: 100%; border-collapse: collapse; background: white; }
         .fixed-table th { background-color: #f8fafc; color: #64748b; font-weight: 700; font-size: 10px; padding: 10px 2px; border-bottom: 1px solid #e2e8f0; text-align: center; }
         .fixed-table td { padding: 10px 4px; border-bottom: 1px solid #f1f5f9; vertical-align: middle; line-height: 1.3; word-break: break-all; overflow-wrap: break-word; }
 
-        /* 너비 픽셀 고정 (한 줄 10자 내외 기준) */
-        .col-place { width: 110px; }   /* 장소: 약 10자 내외 개행 */
-        .col-time { width: 75px; }    /* 시간 */
-        .col-event { width: auto; }    /* 행사명: 가변 너비 */
-        .col-count { width: 45px; }    /* 인원: 숫자 위주 */
-        .col-dept { width: 100px; }    /* 부서명: 약 9~10자 내외 개행 */
-        .col-status { width: 55px; }   /* 상태 */
+        .col-place { width: 110px; }   
+        .col-time { width: 75px; }    
+        .col-event { width: auto; }    
+        .col-count { width: 45px; }    
+        .col-dept { width: 100px; }    
+        .col-status { width: 55px; }   
 
         .wrap-text { display: block; font-size: 10px; text-align: center; }
         .status-badge { font-weight: 800; padding: 2px 4px; border-radius: 4px; font-size: 9px; display: inline-block; border: 1px solid transparent; }
         .period-info { font-size: 9px; font-weight: 700; color: #A855F7; margin-top: 2px; line-height: 1.1; }
         .text-sun { color: #EF4444; }
         .text-sat { color: #3B82F6; }
+
+        /* 카드형 레이아웃 스타일 */
+        .rental-card { border: 1.2px solid #e2e8f0; background: white; border-radius: 0.75rem; position: relative; overflow: hidden; }
+        .card-daily { border-left: 6px solid #3B82F6; }
+        .card-period { border-left: 6px solid #A855F7; }
     </style>
 </head>
 <body class="p-3 md:p-6">
@@ -81,23 +85,20 @@
                     }
                 }
             });
+            const cached = localStorage.getItem("rental_db_cache");
+            if (cached) {
+                sheetData = Papa.parse(cached, { header: true, skipEmptyLines: true }).data;
+                renderUI();
+            }
             loadFromGoogle();
         };
-
-        function getShift(dateStr) {
-            const base = new Date('2026-03-13');
-            const target = new Date(dateStr);
-            const diff = Math.floor((target.setHours(0,0,0,0) - base.setHours(0,0,0,0)) / 86400000);
-            const patterns = [{n:'A', c:'#EF4444'}, {n:'B', c:'#F59E0B'}, {n:'C', c:'#3B82F6'}];
-            return patterns[((diff % 3) + 3) % 3];
-        }
 
         async function loadFromGoogle() {
             const tag = document.getElementById('statusTag');
             try {
                 const res = await fetch(CSV_URL + "&t=" + new Date().getTime());
-                if (!res.ok) throw new Error('Network response was not ok');
                 const text = await res.text();
+                localStorage.setItem("rental_db_cache", text);
                 sheetData = Papa.parse(text, { header: true, skipEmptyLines: true }).data;
                 tag.innerText = "● ONLINE";
                 tag.className = "text-[9px] font-black px-2 py-0.5 rounded-full border bg-white text-green-500 border-green-200";
@@ -105,8 +106,15 @@
             } catch (e) { 
                 tag.innerText = "● OFFLINE"; 
                 tag.className = "text-[9px] font-black px-2 py-0.5 rounded-full border bg-white text-red-500 border-red-200";
-                console.error("Data Load Failed:", e);
             }
+        }
+
+        function getShift(dateStr) {
+            const base = new Date('2026-03-13');
+            const target = new Date(dateStr);
+            const diff = Math.floor((target.setHours(0,0,0,0) - base.setHours(0,0,0,0)) / 86400000);
+            const patterns = [{n:'A', c:'#EF4444'}, {n:'B', c:'#F59E0B'}, {n:'C', c:'#3B82F6'}];
+            return patterns[((diff % 3) + 3) % 3];
         }
 
         function renderUI() {
@@ -139,43 +147,44 @@
 
                     if (filtered.length > 0) {
                         if (mode === 'table') {
-                            dayHtml += `
-                            <div class="overflow-x-auto border border-slate-200 rounded-xl bg-white shadow-sm">
-                                <table class="fixed-table">
-                                    <thead>
-                                        <tr>
-                                            <th class="col-place">장소</th>
-                                            <th class="col-time">시간</th>
-                                            <th class="col-event">행사명</th>
-                                            <th class="col-count">인원</th>
-                                            <th class="col-dept">부서명</th>
-                                            <th class="col-status">상태</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody class="divide-y divide-slate-100">`;
-                            
+                            dayHtml += `<div class="overflow-x-auto border border-slate-200 rounded-xl bg-white shadow-sm"><table class="fixed-table"><thead><tr><th class="col-place">장소</th><th class="col-time">시간</th><th class="col-event">행사명</th><th class="col-count">인원</th><th class="col-dept">부서명</th><th class="col-status">상태</th></tr></thead><tbody class="divide-y divide-slate-100">`;
+                            filtered.forEach(i => {
+                                const isPeriod = (i['유형']||'').includes('기간');
+                                dayHtml += `<tr>
+                                    <td class="col-place font-bold text-slate-600"><div class="wrap-text">${i['장소']||''}</div></td>
+                                    <td class="col-time font-bold text-red-500 text-[10px] text-center">${i['시간']||''}</td>
+                                    <td class="col-event">
+                                        <div class="font-black text-slate-900 leading-tight text-[11px]">${i['행사명']||''}</div>
+                                        ${isPeriod ? `<div class="period-info">📅 ${i['대관기간']||''} (${i['해당요일']||''})</div>` : ''}
+                                    </td>
+                                    <td class="col-count text-center text-[10px] font-bold text-slate-500">${i['인원']||'-'}</td>
+                                    <td class="col-dept text-slate-400 font-bold italic"><div class="wrap-text">${i['부서']||''}</div></td>
+                                    <td class="col-status text-center"><span class="status-badge ${i['상태']==='확정'?'text-orange-600 bg-orange-50 border-orange-100':'text-slate-400 bg-slate-50 border-slate-100'}">${i['상태']||''}</span></td>
+                                </tr>`;
+                            });
+                            dayHtml += `</tbody></table></div>`;
+                        } else {
+                            dayHtml += `<div class="grid grid-cols-1 gap-3">`;
                             filtered.forEach(i => {
                                 const isPeriod = (i['유형']||'').includes('기간');
                                 dayHtml += `
-                                    <tr>
-                                        <td class="col-place font-bold text-slate-600">
-                                            <div class="wrap-text">${i['장소'] || ''}</div>
-                                        </td>
-                                        <td class="col-time font-bold text-red-500 text-[10px] text-center">${i['시간'] || ''}</td>
-                                        <td class="col-event">
-                                            <div class="font-black text-slate-900 leading-tight text-[11px]">${i['행사명'] || ''}</div>
-                                            ${isPeriod ? `<div class="period-info">📅 ${i['대관기간'] || ''} (${i['해당요일'] || ''})</div>` : ''}
-                                        </td>
-                                        <td class="col-count text-center text-[10px] font-bold text-slate-500">${i['인원'] || '-'}</td>
-                                        <td class="col-dept text-slate-400 font-bold italic">
-                                            <div class="wrap-text">${i['부서'] || ''}</div>
-                                        </td>
-                                        <td class="col-status text-center">
-                                            <span class="status-badge ${i['상태']==='확정'?'text-orange-600 bg-orange-50 border-orange-100':'text-slate-400 bg-slate-50 border-slate-100'}">${i['상태'] || ''}</span>
-                                        </td>
-                                    </tr>`;
+                                <div class="rental-card p-4 shadow-sm ${isPeriod ? 'card-period' : 'card-daily'}">
+                                    <div class="flex justify-between items-start mb-2">
+                                        <span class="text-[12px] font-black text-slate-700">📍 ${i['장소']}</span>
+                                        <span class="text-[11px] font-bold text-red-500 italic">🕒 ${i['시간']}</span>
+                                    </div>
+                                    <div class="text-[15px] font-black text-slate-900 leading-tight tracking-tight mb-2">${i['행사명']}</div>
+                                    ${isPeriod ? `<div class="period-info mb-3">📅 ${i['대관기간']||''} (${i['해당요일']||''})</div>` : '<div class="h-2"></div>'}
+                                    <div class="flex justify-between items-center">
+                                        <div class="flex items-center gap-2">
+                                            <span class="status-badge ${i['상태']==='확정' ? 'bg-orange-50 text-orange-600 border-orange-100' : 'bg-slate-50 text-slate-400 border-slate-100'}">${i['상태']}</span>
+                                            <span class="text-[10px] font-bold text-slate-400 italic">${i['부서']||''}</span>
+                                        </div>
+                                        <span class="text-[11px] font-black text-slate-300 tracking-tighter">👥 ${i['인원']||0}명</span>
+                                    </div>
+                                </div>`;
                             });
-                            dayHtml += `</tbody></table></div>`;
+                            dayHtml += `</div>`;
                         }
                     } else {
                         dayHtml += `<div class="p-6 text-center bg-white rounded-2xl text-slate-300 text-[11px] font-bold border border-dashed border-slate-100">대관 내역 없음</div>`;
@@ -186,6 +195,76 @@
                 area.innerHTML += dayHtml;
                 curr.setDate(curr.getDate() + 1);
             }
+        }
+
+        async function downloadExcel() {
+            if (sheetData.length === 0) return alert("데이터가 없습니다.");
+            const workbook = new ExcelJS.Workbook();
+            const sheet = workbook.addWorksheet('대관현황');
+            sheet.columns = [{ width: 22 }, { width: 14 }, { width: 45 }, { width: 22 }, { width: 8 }, { width: 10 }];
+            let rIdx = 1;
+            let curr = new Date(dateRange.start + 'T00:00:00');
+            const end = new Date(dateRange.end + 'T00:00:00');
+
+            while (curr <= end) {
+                const dStr = curr.toLocaleDateString('en-CA');
+                const shift = getShift(dStr);
+                
+                // 날짜 행
+                sheet.mergeCells(`A${rIdx}:F${rIdx}`);
+                const dRow = sheet.getRow(rIdx);
+                const dCell = sheet.getCell(`A${rIdx}`);
+                dCell.value = `📅 ${dStr} | ${shift.n}조 근무`;
+                dCell.fill = { type:'pattern', pattern:'solid', fgColor:{argb:'FF334155'} };
+                dCell.font = { color:{argb:'FFFFFFFF'}, bold:true };
+                dCell.alignment = { vertical: 'middle', horizontal: 'center' };
+                dRow.height = 30; // 높이 30 고정
+                rIdx++;
+
+                selectedBu.forEach(bu => {
+                    const searchName = (bu === "의산연") ? "의생명산업연구원" : bu;
+                    const filtered = sheetData.filter(d => (d['날짜']||'').trim() === dStr && (d['건물명']||'').trim().includes(searchName));
+                    
+                    // 건물명 행
+                    sheet.mergeCells(`A${rIdx}:F${rIdx}`);
+                    const bRow = sheet.getRow(rIdx);
+                    const bCell = sheet.getCell(`A${rIdx}`);
+                    bCell.value = `🏢 ${bu} (${filtered.length}건)`;
+                    bCell.fill = { type:'pattern', pattern:'solid', fgColor:{argb:'FFE9ECEF'} };
+                    bCell.font = { color:{argb:'FF1E3A5F'}, bold:true };
+                    bCell.alignment = { vertical: 'middle' };
+                    bRow.height = 30; // 높이 30 고정
+                    rIdx++;
+
+                    if (filtered.length > 0) {
+                        // 헤더(장소) 행
+                        const hRow = sheet.addRow(['장소', '시간', '행사명', '부서', '인원', '상태']);
+                        hRow.height = 30; // 높이 30 고정
+                        hRow.eachCell(c => { 
+                            c.font={bold:true}; 
+                            c.fill={type:'pattern',pattern:'solid',fgColor:{argb:'FFF8F9FA'}};
+                            c.border={top:{style:'thin'},left:{style:'thin'},bottom:{style:'thin'},right:{style:'thin'}};
+                            c.alignment = { vertical: 'middle', horizontal: 'center' }; // 중앙 정렬 추가
+                        });
+                        rIdx++;
+                        
+                        filtered.forEach(i => {
+                            const row = sheet.addRow([i['장소'], i['시간'], i['행사명'], i['부서'], i['인원'], i['상태']]);
+                            row.eachCell((c, colNum) => { 
+                                c.border={top:{style:'thin'},left:{style:'thin'},bottom:{style:'thin'},right:{style:'thin'}};
+                                c.alignment={vertical:'middle', wrapText:true};
+                                if([1,2,5,6].includes(colNum)) c.alignment.horizontal='center';
+                            });
+                            row.height = 35; // 데이터행은 가독성을 위해 35 유지
+                            rIdx++;
+                        });
+                    }
+                    rIdx++;
+                });
+                curr.setDate(curr.getDate() + 1);
+            }
+            const buffer = await workbook.xlsx.writeBuffer();
+            saveAs(new Blob([buffer]), `성의대관현황_${dateRange.start}.xlsx`);
         }
 
         function initBuChips() {
@@ -204,19 +283,13 @@
                     }
                     document.querySelectorAll('.bu-chip').forEach(c => {
                         const name = c.innerText;
-                        if (name === "전체") {
-                            c.classList.toggle('active', selectedBu.length === BUILDINGS.length - 1);
-                        } else {
-                            c.classList.toggle('active', selectedBu.includes(name));
-                        }
+                        c.classList.toggle('active', name === "전체" ? selectedBu.length === BUILDINGS.length - 1 : selectedBu.includes(name));
                     });
                     renderUI();
                 };
                 container.appendChild(chip);
             });
         }
-        
-        async function downloadExcel() { /* 원본 로직 유지 */ }
     </script>
 </body>
 </html>
