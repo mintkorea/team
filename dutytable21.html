@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>C조 당직 근무편성표 v1.4</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+        body { font-family: 'Pretendard', sans-serif; background-color: #f8fafc; line-height: 1.2; }
+        .main-wrapper { padding: 10px 8px 80px 8px; } 
+        .scroll-container { overflow-x: auto; background: white; border-radius: 8px; margin-bottom: 0.75rem; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); }
+        table { border-collapse: collapse; width: 100%; min-width: 340px; table-layout: fixed; } 
+        th, td { border: 1px solid #e2e8f0; text-align: center; font-size: 12px; height: 38px; padding: 0 !important; }
+        .day-header { background: #f3a344; color: white; font-weight: 800; font-size: 13px; }
+        .night-header { background: #222e3f; color: white; font-weight: 800; font-size: 13px; }
+        .time-col { width: 75px; background: #f1f5f9; font-weight: 700; color: #475569; font-size: 11px; }
+        .name-row { background: #f8fafc; font-weight: 800; color: #1e293b; height: 34px; }
+        .status-office { color: #1e40af; font-weight: 700; }
+        .status-lobby { color: #0f172a; font-weight: 500; }
+        .status-patrol { color: #b91c1c; font-weight: 800; background-color: #fef2f2; }
+        .status-break { color: #64748b; font-weight: 400; background-color: #f8fafc; }
+        .status-meal { color: #15803d; font-weight: 800; background-color: #f0fdf4; }
+        .bg-office { background-color: #eff6ff; }
+        .bg-break { background-color: #f8fafc; }
+        .bg-meal { background-color: #f0fdf4; }
+        .current-row { outline: 2px solid #ef4444; outline-offset: -2px; background-color: #fff7ed !important; }
+    </style>
+</head>
+<body>
+    <div class="main-wrapper">
+        <div class="mb-4 text-center">
+            <h1 class="text-xl font-black text-slate-900">🛡️ 성의교정 당직 근무편성표</h1>
+            <p class="text-[10px] text-slate-500 font-bold mt-1">의산연A 13-14 휴게/순찰 반영 (v1.4)</p>
+        </div>
+
+        <div class="scroll-container">
+            <div class="overflow-hidden border border-slate-200 rounded-lg">
+                <table id="dutyTable">
+                    <thead>
+                        <tr class="name-row">
+                            <th class="time-col">구분</th>
+                            <th>조장</th>
+                            <th>성의대원</th>
+                            <th>의산A</th>
+                            <th>의산B</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td class="day-header" colspan="5">주간 근무 (07:00 ~ 17:00)</td></tr>
+                        <tr data-start="7" data-end="8"><td class="time-col">07-08</td><td class="status-office bg-office">보안실</td><td class="status-lobby">로비</td><td class="status-lobby">로비</td><td class="status-break bg-break">휴게</td></tr>
+                        <tr data-start="8" data-end="9"><td class="time-col">08-09</td><td class="status-office bg-office">보안실</td><td class="status-break bg-break">휴게</td><td class="status-break bg-break">휴게</td><td class="status-lobby">로비</td></tr>
+                        <tr data-start="9" data-end="10"><td class="time-col">09-10</td><td class="status-office bg-office">보안실</td><td class="status-patrol">순찰</td><td class="status-break bg-break">휴게</td><td class="status-lobby">로비</td></tr>
+                        <tr data-start="10" data-end="11"><td class="time-col">10-11</td><td class="status-break bg-break">휴게</td><td class="status-office bg-office">보안실</td><td class="status-lobby">로비</td><td class="status-break bg-break">순찰/휴게</td></tr>
+                        <tr data-start="11" data-end="12"><td class="time-col">11-12</td><td class="status-office bg-office">보안실</td><td class="status-meal bg-meal">중식</td><td class="status-lobby">로비</td><td class="status-meal bg-meal">중식</td></tr>
+                        <tr data-start="12" data-end="13"><td class="time-col">12-13</td><td class="status-meal bg-meal">중식</td><td class="status-office bg-office">보안실</td><td class="status-meal bg-meal">중식</td><td class="status-lobby">로비</td></tr>
+                        <tr data-start="13" data-end="14"><td class="time-col">13-14</td><td class="status-office bg-office">보안실</td><td class="status-break bg-break">휴게</td><td class="status-break bg-break">휴게/순찰</td><td class="status-lobby">로비</td></tr>
+                        <tr data-start="14" data-end="15"><td class="time-col">14-15</td><td class="status-patrol">순찰</td><td class="status-office bg-office">보안실</td><td class="status-lobby">로비</td><td class="status-break bg-break">휴게</td></tr>
+                        <tr data-start="15" data-end="16"><td class="time-col">15-16</td><td class="status-office bg-office">보안실</td><td class="status-break bg-break">휴게</td><td class="status-lobby">로비</td><td class="status-break bg-break">휴게</td></tr>
+                        <tr data-start="16" data-end="17"><td class="time-col">16-17</td><td class="status-break bg-break">휴게</td><td class="status-office bg-office">보안실</td><td class="status-break bg-break">휴게</td><td class="status-lobby">로비</td></tr>
+
+                        <tr><td class="night-header" colspan="5">야간 근무 (17:00 ~ 07:00)</td></tr>
+                        <tr data-start="17" data-end="18"><td class="time-col">17-18</td><td class="status-office bg-office">보안실</td><td class="status-break bg-break">휴게</td><td class="status-break bg-break">휴게</td><td class="status-lobby">로비</td></tr>
+                        <tr data-start="18" data-end="19"><td class="time-col">18-19</td><td class="status-office bg-office">보안실</td><td class="status-meal bg-meal">석식</td><td class="status-lobby">로비</td><td class="status-meal bg-meal">석식</td></tr>
+                        <tr data-start="19" data-end="20"><td class="time-col">19-20</td><td class="status-office bg-office">보안실</td><td class="status-office bg-office">보안실</td><td class="status-meal bg-meal">석식</td><td class="status-lobby">로비</td></tr>
+                        <tr data-start="20" data-end="21"><td class="time-col">20-21</td><td class="status-meal bg-meal">석식</td><td class="status-office bg-office">보안실</td><td class="status-lobby">로비</td><td class="status-break bg-break">휴게</td></tr>
+                        <tr data-start="21" data-end="22"><td class="time-col">21-22</td><td class="status-office bg-office">보안실</td><td class="status-patrol">순찰</td><td class="status-lobby">로비</td><td class="status-break bg-break">휴게</td></tr>
+                        <tr data-start="22" data-end="23"><td class="time-col">22-23</td><td class="status-patrol">순찰</td><td class="status-break bg-break">휴게</td><td class="status-patrol">순찰</td><td class="status-lobby">로비</td></tr>
+                        <tr data-start="23" data-end="24"><td class="time-col">23-24</td><td class="status-office bg-office">보안실</td><td class="status-break bg-break">휴게</td><td class="status-break bg-break">휴게</td><td class="status-lobby">로비</td></tr>
+                        <tr data-start="24" data-end="25"><td class="time-col">24-01</td><td class="status-office bg-office">보안실</td><td class="status-break bg-break">휴게</td><td class="status-break bg-break">휴게</td><td class="status-lobby">로비</td></tr>
+                        <tr data-start="25" data-end="25.66"><td class="time-col">01-01:40</td><td class="status-office bg-office">보안실</td><td class="status-break bg-break">휴게</td><td class="status-break bg-break">휴게</td><td class="status-lobby">로비</td></tr>
+                        <tr data-start="25.66" data-end="26"><td class="time-col">01:40-02</td><td class="status-break bg-break">휴게</td><td class="status-office bg-office">보안실</td><td class="status-break bg-break">휴게</td><td class="status-lobby">로비</td></tr>
+                        <tr data-start="26" data-end="27"><td class="time-col">02-03</td><td class="status-break bg-break">휴게</td><td class="status-office bg-office">보안실</td><td class="status-lobby">로비</td><td class="status-break bg-break">휴게</td></tr>
+                        <tr data-start="27" data-end="28"><td class="time-col">03-04</td><td class="status-break bg-break">휴게</td><td class="status-office bg-office">보안실</td><td class="status-lobby">로비</td><td class="status-break bg-break">휴게</td></tr>
+                        <tr data-start="28" data-end="29"><td class="time-col">04-05</td><td class="status-break bg-break">휴게</td><td class="status-office bg-office">보안실</td><td class="status-lobby">로비</td><td class="status-break bg-break">휴게</td></tr>
+                        <tr data-start="29" data-end="30"><td class="time-col">05-06</td><td class="status-office bg-office">보안실</td><td class="status-patrol">순찰</td><td class="status-lobby">로비</td><td class="status-patrol">순찰</td></tr>
+                        <tr data-start="30" data-end="31"><td class="time-col">06-07</td><td class="status-office bg-office">보안실</td><td class="status-office bg-office">보안실</td><td class="status-break bg-break">휴게</td><td class="status-lobby">로비</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-sm border-t flex justify-between items-center px-6 py-4 shadow-lg z-50">
+        <div id="date" class="text-xs font-bold text-slate-500 uppercase tracking-wide"></div>
+        <div id="clock" class="text-xl font-black text-slate-900 tabular-nums">00:00:00</div>
+    </div>
+
+    <script>
+        function updateTime() {
+            const now = new Date();
+            const days = ['일', '월', '화', '수', '목', '금', '토'];
+            document.getElementById('date').innerText = `${now.getMonth()+1}월 ${now.getDate()}일 (${days[now.getDay()]})`;
+            document.getElementById('clock').innerText = now.toLocaleTimeString('ko-KR', { hour12: false });
+            highlightCurrentShift();
+        }
+
+        function highlightCurrentShift() {
+            const now = new Date();
+            let hr = now.getHours();
+            const min = now.getMinutes();
+            let currentTimeVal = hr + (min / 60);
+            if (hr < 7) currentTimeVal += 24;
+
+            const rows = document.querySelectorAll('#dutyTable tbody tr[data-start]');
+            rows.forEach(row => {
+                const start = parseFloat(row.getAttribute('data-start'));
+                const end = parseFloat(row.getAttribute('data-end'));
+                row.classList.remove('current-row');
+                if (currentTimeVal >= start && currentTimeVal < end) {
+                    row.classList.add('current-row');
+                }
+            });
+        }
+        setInterval(updateTime, 1000);
+        window.onload = updateTime;
+    </script>
+</body>
+</html>
